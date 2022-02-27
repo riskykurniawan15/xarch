@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"time"
-	"xarch/config"
-	echo "xarch/presenters/http/engine"
+
+	"github.com/riskykurniawan15/xarch/config"
+	echo "github.com/riskykurniawan15/xarch/presenters/http/engine"
 )
 
 func Startup() {

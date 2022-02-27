@@ -1,7 +1,7 @@
 package main
 
 import (
-	"xarch/exec"
+	"github.com/riskykurniawan15/xarch/exec"
 )
 
 func main() {

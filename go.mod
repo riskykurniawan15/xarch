@@ -1,4 +1,4 @@
-module xarch
+module github.com/riskykurniawan15/xarch
 
 go 1.17
 

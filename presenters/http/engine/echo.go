@@ -6,8 +6,9 @@ import (
 	"os"
 	"os/signal"
 	"time"
-	"xarch/config"
-	"xarch/presenters/http/router"
+
+	"github.com/riskykurniawan15/xarch/config"
+	"github.com/riskykurniawan15/xarch/presenters/http/router"
 )
 
 func Start(cfg config.Config) {
