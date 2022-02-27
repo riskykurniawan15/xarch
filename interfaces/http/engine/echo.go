@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
-	"github.com/riskykurniawan15/xarch/presenters/http/router"
+	"github.com/riskykurniawan15/xarch/interfaces/http/router"
 )
 
 func Start(cfg config.Config) {

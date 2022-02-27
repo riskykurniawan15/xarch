@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
-	echo "github.com/riskykurniawan15/xarch/presenters/http/engine"
+	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
 )
 
 func Startup() {
