@@ -26,7 +26,7 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 
 	fmt.Print(string("\033[32m"))
 	fmt.Println(logo, string("\033[34m"))
-	fmt.Println("By: Risky Kurniawan | https://risoftinc.com")
+	fmt.Println("By: Risky Kurniawan | https://risoftinc.com | mailto:riskykurniawan@risoftinc.com")
 	fmt.Println("Please wait, your program is running in 5 seconds", string("\033[0m"))
 	time.Sleep(time.Duration(5) * time.Second)
 }
