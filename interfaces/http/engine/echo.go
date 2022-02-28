@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
-	"github.com/riskykurniawan15/xarch/interfaces/http/router"
+	"github.com/riskykurniawan15/xarch/interfaces/http/routers"
 )
 
 func Start(cfg config.Config) {
-	e := router.Routes()
+	e := routers.Routers()
 	e.Logger.Fatal(e.Start(":" + cfg.Http.Port))
 
 	go func() {
