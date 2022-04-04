@@ -1,4 +1,4 @@
-package exec
+package arch
 
 import (
 	"flag"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/driver"
+	"github.com/riskykurniawan15/xarch/exec/gate"
 	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
 	"gorm.io/gorm"
 )
@@ -38,20 +39,17 @@ func StartDriver(cfg config.Config) *gorm.DB {
 	return db
 }
 
-func StartGate() {
-
-}
-
 func EngineSwitch() {
 	engine_run := flag.String("engine", "*", "type your egine")
 	flag.Parse()
 
 	cfg := config.Configuration()
-	StartDriver(cfg)
+	DB := StartDriver(cfg)
+	svc := gate.StartService(DB)
 
 	switch *engine_run {
 	case "http":
-		echo.Start(cfg)
+		echo.Start(cfg, svc)
 	case "*":
 		fmt.Println("Please type your engine")
 		fmt.Println("go run main.go -engine=type")
