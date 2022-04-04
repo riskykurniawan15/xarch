@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/riskykurniawan15/xarch/exec"
+	"github.com/riskykurniawan15/xarch/exec/arch"
 )
 
 func main() {
-	exec.Startup()
-	exec.EngineSwitch()
+	arch.Startup()
+	arch.EngineSwitch()
 }
