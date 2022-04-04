@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -18,7 +19,14 @@ func NewUserHandlers(US *services.UserService) *UserHandler {
 }
 
 func (handler UserHandler) ShowUser(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"status": "oke",
-	})
+	User, err := handler.UserService.GetListUser()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"status": "504",
+			"error":  fmt.Sprint(err),
+		})
+	}
+
+	return c.JSON(http.StatusOK, User)
 }
