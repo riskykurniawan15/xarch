@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
+	"github.com/riskykurniawan15/xarch/driver"
 	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
+	"gorm.io/gorm"
 )
 
 func Startup() {
@@ -31,11 +33,21 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 	time.Sleep(time.Duration(5) * time.Second)
 }
 
+func StartDriver(cfg config.Config) *gorm.DB {
+	db := driver.ConnectDB(cfg.DB)
+	return db
+}
+
+func StartGate() {
+
+}
+
 func EngineSwitch() {
 	engine_run := flag.String("engine", "*", "type your egine")
 	flag.Parse()
 
 	cfg := config.Configuration()
+	StartDriver(cfg)
 
 	switch *engine_run {
 	case "http":
