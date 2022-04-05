@@ -15,11 +15,11 @@ func NewUserRepo(DB *gorm.DB) *UserRepo {
 	}
 }
 
-func (repo UserRepo) SelectUser() ([]*models.People, error) {
-	var model []*models.People
+func (repo UserRepo) SelectUser() ([]*models.User, error) {
+	var model []*models.User
 
 	result := repo.DB.
-		Model(&models.People{}).
+		Model(&models.User{}).
 		Find(&model)
 
 	if result.Error != nil {

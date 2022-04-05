@@ -15,7 +15,7 @@ func NewUserService(UR *repository.UserRepo) *UserService {
 	}
 }
 
-func (US UserService) GetListUser() ([]*models.People, error) {
+func (US UserService) GetListUser() ([]*models.User, error) {
 	User, err := US.UserRepo.SelectUser()
 	if err != nil {
 		return nil, err

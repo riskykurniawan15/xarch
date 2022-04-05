@@ -1,8 +1,8 @@
 package models
 
-const PeopleTable = "peoples"
+const UserTable = "users"
 
-type People struct {
+type User struct {
 	ID      uint   `gorm:"column:id;primaryKey"`
 	Name    string `gorm:"column:name"`
 	Email   string `gorm:"column:email"`
@@ -10,6 +10,6 @@ type People struct {
 	Gender  string `gorm:"column:gender"`
 }
 
-func (People) TableName() string {
-	return PeopleTable
+func (User) TableName() string {
+	return UserTable
 }
