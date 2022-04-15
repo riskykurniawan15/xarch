@@ -18,7 +18,7 @@ func NewUserHandlers(US *services.UserService) *UserHandler {
 	}
 }
 
-func (handler UserHandler) ShowUser(c echo.Context) error {
+func (handler UserHandler) Index(c echo.Context) error {
 	User, err := handler.UserService.GetListUser()
 
 	if err != nil {
@@ -29,4 +29,28 @@ func (handler UserHandler) ShowUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, User)
+}
+
+func (handler UserHandler) Show(c echo.Context) error {
+	return c.JSON(http.StatusNotFound, map[string]string{
+		"status": "404",
+	})
+}
+
+func (handler UserHandler) Store(c echo.Context) error {
+	return c.JSON(http.StatusNotFound, map[string]string{
+		"status": "404",
+	})
+}
+
+func (handler UserHandler) Update(c echo.Context) error {
+	return c.JSON(http.StatusNotFound, map[string]string{
+		"status": "404",
+	})
+}
+
+func (handler UserHandler) Delete(c echo.Context) error {
+	return c.JSON(http.StatusNotFound, map[string]string{
+		"status": "404",
+	})
 }

@@ -22,8 +22,11 @@ func Routers(svc *gate.Service) *echo.Echo {
 	handler := StartHandlers(svc)
 
 	e := echo.New()
-	users := handler.UserHandler
-	e.GET("/", users.ShowUser)
+	user_group := e.Group("/user")
+	{
+		user_handler := handler.UserHandler
+		user_group.GET("/", user_handler.Index)
+	}
 
 	return e
 }
