@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/riskykurniawan15/xarch/domain/models"
+	"github.com/riskykurniawan15/xarch/domain/users/models"
 	"gorm.io/gorm"
 )
 

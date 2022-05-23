@@ -9,9 +9,9 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/riskykurniawan15/xarch/config"
+	gate "github.com/riskykurniawan15/xarch/domain"
 	"github.com/riskykurniawan15/xarch/driver"
 	"github.com/riskykurniawan15/xarch/exec/elsa"
-	"github.com/riskykurniawan15/xarch/exec/gate"
 	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
 	"gorm.io/gorm"
 )

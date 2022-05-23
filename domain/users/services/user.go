@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/riskykurniawan15/xarch/domain/models"
-	"github.com/riskykurniawan15/xarch/domain/repository"
+	"github.com/riskykurniawan15/xarch/domain/users/models"
+	"github.com/riskykurniawan15/xarch/domain/users/repository"
 )
 
 type UserService struct {

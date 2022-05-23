@@ -1,8 +1,8 @@
-package gate
+package domain
 
 import (
-	"github.com/riskykurniawan15/xarch/domain/repository"
-	"github.com/riskykurniawan15/xarch/services"
+	"github.com/riskykurniawan15/xarch/domain/users/repository"
+	"github.com/riskykurniawan15/xarch/domain/users/services"
 	"gorm.io/gorm"
 )
 

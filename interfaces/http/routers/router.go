@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/labstack/echo/v4"
-	gate "github.com/riskykurniawan15/xarch/exec/gate"
+	gate "github.com/riskykurniawan15/xarch/domain"
 	user "github.com/riskykurniawan15/xarch/interfaces/http/handlers"
 )
 

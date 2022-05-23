@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
-	gate "github.com/riskykurniawan15/xarch/exec/gate"
+	gate "github.com/riskykurniawan15/xarch/domain"
 	"github.com/riskykurniawan15/xarch/interfaces/http/routers"
 )
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/riskykurniawan15/xarch/services"
+	"github.com/riskykurniawan15/xarch/domain/users/services"
 )
 
 type UserHandler struct {
