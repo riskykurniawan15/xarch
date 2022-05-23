@@ -2,6 +2,7 @@ package elsa
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -151,7 +152,7 @@ func CreateMigrationSchema(arg string) error {
 		return err
 	}
 
-	fmt.Println("Success create migration schema " + arg)
+	log.Println("Success create migration schema " + arg)
 
 	return nil
 }
@@ -193,9 +194,9 @@ func RunMigrationSchema(arg string, method string) error {
 		}
 		if isRun {
 			if method == "up" {
-				fmt.Println("Success run migration schema " + f)
+				log.Println("Success run migration schema " + f)
 			} else {
-				fmt.Println("Success rollback migration schema " + f)
+				log.Println("Success rollback migration schema " + f)
 			}
 		}
 	}
@@ -220,7 +221,7 @@ func CreateMigrationSeeder(arg string) error {
 		return err
 	}
 
-	fmt.Println("Success create migration schema " + arg)
+	log.Println("Success create migration schema " + arg)
 
 	return nil
 }
@@ -249,7 +250,7 @@ func RunMigrationSeeder(arg string) error {
 			return err
 		}
 		if isRun {
-			fmt.Println("Success run migration seeder " + f)
+			log.Println("Success run migration seeder " + f)
 		}
 	}
 	return nil

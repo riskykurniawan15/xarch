@@ -3,6 +3,7 @@ package elsa
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -33,7 +34,7 @@ func BuildDomain(domain_name string) error {
 			return err
 		}
 
-		fmt.Println("Success to build domain " + domain_name)
+		log.Println("Success to build domain " + domain_name)
 
 		return nil
 	}

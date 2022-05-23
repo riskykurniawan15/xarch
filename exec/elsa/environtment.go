@@ -1,8 +1,8 @@
 package elsa
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 const EnvTemplate string = `#SERVER
@@ -33,7 +33,7 @@ func BuildEnvirontment() error {
 		return err
 	}
 
-	fmt.Println("Success to build environtment")
+	log.Println("Success to build environtment")
 
 	return nil
 }
