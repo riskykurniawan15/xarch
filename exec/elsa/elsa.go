@@ -18,7 +18,9 @@ func RunElsa() {
 
 		var err error = nil
 
-		if cmd == "create_migration_schema" {
+		if cmd == "create_env" {
+			err = BuildEnvirontment()
+		} else if cmd == "create_migration_schema" {
 			err = CreateMigrationSchema(arg)
 		} else if cmd == "run_migration_schema" {
 			err = RunMigrationSchema(arg, "up")
