@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
-	gate "github.com/riskykurniawan15/xarch/domain"
+	"github.com/riskykurniawan15/xarch/domain"
 	"github.com/riskykurniawan15/xarch/interfaces/http/routers"
 )
 
-func Start(cfg config.Config, svc *gate.Service) {
+func Start(cfg config.Config, svc *domain.Service) {
 	e := routers.Routers(svc)
 	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%d", cfg.Http.Server, cfg.Http.Port)))
 

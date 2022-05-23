@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/labstack/echo/v4"
-	gate "github.com/riskykurniawan15/xarch/domain"
+	"github.com/riskykurniawan15/xarch/domain"
 	user "github.com/riskykurniawan15/xarch/interfaces/http/handlers"
 )
 
@@ -10,7 +10,7 @@ type Handlers struct {
 	UserHandler *user.UserHandler
 }
 
-func StartHandlers(svc *gate.Service) *Handlers {
+func StartHandlers(svc *domain.Service) *Handlers {
 	users := user.NewUserHandlers(svc.UserService)
 
 	return &Handlers{
@@ -18,7 +18,7 @@ func StartHandlers(svc *gate.Service) *Handlers {
 	}
 }
 
-func Routers(svc *gate.Service) *echo.Echo {
+func Routers(svc *domain.Service) *echo.Echo {
 	handler := StartHandlers(svc)
 
 	e := echo.New()

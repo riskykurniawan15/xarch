@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/riskykurniawan15/xarch/config"
-	gate "github.com/riskykurniawan15/xarch/domain"
+	"github.com/riskykurniawan15/xarch/domain"
 	"github.com/riskykurniawan15/xarch/driver"
 	"github.com/riskykurniawan15/xarch/exec/elsa"
 	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
@@ -66,7 +66,7 @@ func EngineSwitch() {
 
 	cfg := config.Configuration()
 	DB, _ := StartDriver(cfg)
-	svc := gate.StartService(DB)
+	svc := domain.StartService(DB)
 
 	switch *engine_run {
 	case "http":
