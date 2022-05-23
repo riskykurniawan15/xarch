@@ -1,21 +1,21 @@
 package domain
 
 import (
-	"github.com/riskykurniawan15/xarch/domain/users/repository"
-	"github.com/riskykurniawan15/xarch/domain/users/services"
+	UserRepo "github.com/riskykurniawan15/xarch/domain/users/repository"
+	UserService "github.com/riskykurniawan15/xarch/domain/users/services"
 	"gorm.io/gorm"
 )
 
 type Repo struct {
-	UserRepo *repository.UserRepo
+	UserRepo *UserRepo.UserRepo
 }
 
 type Service struct {
-	UserService *services.UserService
+	UserService *UserService.UserService
 }
 
 func StartRepo(DB *gorm.DB) *Repo {
-	UserRepo := repository.NewUserRepo(DB)
+	UserRepo := UserRepo.NewUserRepo(DB)
 
 	return &Repo{
 		UserRepo,
@@ -24,7 +24,7 @@ func StartRepo(DB *gorm.DB) *Repo {
 
 func StartService(DB *gorm.DB) *Service {
 	Repo := StartRepo(DB)
-	UserService := services.NewUserService(Repo.UserRepo)
+	UserService := UserService.NewUserService(Repo.UserRepo)
 
 	return &Service{
 		UserService,
