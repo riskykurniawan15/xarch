@@ -6,5 +6,4 @@ import (
 
 func main() {
 	arch.Startup()
-	arch.EngineSwitch()
 }

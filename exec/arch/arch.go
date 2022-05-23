@@ -3,6 +3,8 @@ package arch
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/riskykurniawan15/xarch/config"
@@ -13,6 +15,20 @@ import (
 )
 
 func Startup() {
+	var cli string = ""
+	if len(os.Args) > 1 {
+		cli = strings.ToLower(os.Args[1])
+	}
+
+	switch cli {
+	case "elsa":
+		RunElsa()
+	default:
+		RunApp()
+	}
+}
+
+func RunApp() {
 	logo := fmt.Sprint(`Welcome to:
      ___           ___           ___           ___           ___     
     |\__\         /\  \         /\  \         /\  \         /\__\    
@@ -32,6 +48,7 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 	fmt.Println("By: Risky Kurniawan | https://risoftinc.com | mailto:riskykurniawan@risoftinc.com")
 	fmt.Println("Please wait, your program is running in 5 seconds", string("\033[0m"))
 	time.Sleep(time.Duration(5) * time.Second)
+	EngineSwitch()
 }
 
 func StartDriver(cfg config.Config) *gorm.DB {
