@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/driver"
 	"github.com/riskykurniawan15/xarch/exec/elsa"
@@ -52,9 +53,11 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 	EngineSwitch()
 }
 
-func StartDriver(cfg config.Config) *gorm.DB {
+func StartDriver(cfg config.Config) (*gorm.DB, *redis.Client) {
 	db := driver.ConnectDB(cfg.DB)
-	return db
+	rdb := driver.ConnectRedis(cfg.RDB)
+
+	return db, rdb
 }
 
 func EngineSwitch() {
@@ -62,7 +65,7 @@ func EngineSwitch() {
 	flag.Parse()
 
 	cfg := config.Configuration()
-	DB := StartDriver(cfg)
+	DB, _ := StartDriver(cfg)
 	svc := gate.StartService(DB)
 
 	switch *engine_run {

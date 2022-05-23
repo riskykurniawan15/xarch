@@ -14,7 +14,13 @@ DB_USER=root
 DB_PASS=
 DB_SERVER=localhost
 DB_PORT=3306
-DB_NAME=xarch`
+DB_NAME=xarch
+
+#REDIS
+RDB_ADDRESS=127.0.0.1
+RDB_PORT=6379
+RDB_PASS=
+RDB_DB_DEFAULT=0`
 
 func BuildEnvirontment() error {
 	data, err := ioutil.ReadFile(".env.example")

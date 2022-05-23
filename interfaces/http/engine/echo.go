@@ -2,6 +2,7 @@ package engine
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,10 +15,10 @@ import (
 
 func Start(cfg config.Config, svc *gate.Service) {
 	e := routers.Routers(svc)
-	e.Logger.Fatal(e.Start(":" + cfg.Http.Port))
+	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%d", cfg.Http.Server, cfg.Http.Port)))
 
 	go func() {
-		if err := e.Start(":" + cfg.Http.Port); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(fmt.Sprintf("%s:%d", cfg.Http.Server, cfg.Http.Port)); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down the server")
 		}
 	}()
