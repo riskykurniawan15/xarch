@@ -12,32 +12,10 @@ import (
 	migrate "github.com/riskykurniawan15/xarch/migration"
 )
 
-const SchemaLoc string = "migration/schema/"
-const SeederLoc string = "migration/seeder/"
-
-func Prefix() string {
-	return time.Now().Format("20060102150405") + "_"
-}
-
-func CreateMigrationSchema(arg string) error {
-	if arg == "" {
-		return fmt.Errorf("Failed create migration schema")
-	}
-
-	files, err := os.OpenFile(SchemaLoc+Prefix()+arg+".sql", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-
-	defer files.Close()
-	if _, err := files.WriteString("--Up\n/* Type Your SQL Code in Here */\n--EndUp\n--Down\n/* Type Your SQL Code in Here */\n--EndDown"); err != nil {
-		return err
-	}
-
-	fmt.Println("Success create migration schema " + arg)
-
-	return nil
-}
+const (
+	SchemaLoc string = "migration/schema/"
+	SeederLoc string = "migration/seeder/"
+)
 
 type Migration struct {
 	ID        uint      `gorm:"primaryKey"`
@@ -49,6 +27,17 @@ type Migration struct {
 
 func (Migration) TableName() string {
 	return "migration_histories"
+}
+
+func Prefix() string {
+	return time.Now().Format("20060102150405") + "_"
+}
+
+func DB_Driver() *gorm.DB {
+	cfg := config.Configuration()
+	DB := StartDriver(cfg)
+
+	return DB
 }
 
 func MigrationTableCheck(DB *gorm.DB, method string) []*Migration {
@@ -81,57 +70,30 @@ func MigrationTableCheck(DB *gorm.DB, method string) []*Migration {
 	return model
 }
 
-func DB_Driver() *gorm.DB {
-	cfg := config.Configuration()
-	DB := StartDriver(cfg)
-
-	return DB
-}
-
-func RunMigrationSchema(arg string, method string) error {
-	var FileList []string
-
-	DB := DB_Driver()
-
-	MigrationTable := MigrationTableCheck(DB, method)
-
+func ReadScript(str string, method string) (out string) {
+	var begin, end string = "", ""
 	if method == "up" {
-		if arg == "" {
-			for _, f := range migrate.ExecSchema() {
-				FileList = append(FileList, f)
-			}
-		} else {
-			FileList = append(FileList, arg)
-		}
+		begin = "--Up"
+		end = "--EndUp"
 	} else {
-		if arg == "" {
-			for _, f := range MigrationTable {
-				FileList = append(FileList, f.Name)
-			}
-		} else {
-			FileList = append(FileList, arg)
-		}
+		begin = "--Down"
+		end = "--EndDown"
 	}
 
-	for _, f := range FileList {
-		content, err := os.ReadFile(SchemaLoc + f)
-		if err != nil {
-			return err
-		}
-		script := GetScript(string(content), method)
-		isRun, err := RunScript(DB, f, script, "schema", method)
-		if err != nil {
-			return err
-		}
-		if isRun {
-			if method == "up" {
-				fmt.Println("Success run migration schema " + f)
-			} else {
-				fmt.Println("Success rollback migration schema " + f)
-			}
-		}
+	scriptFirst := strings.Index(str, begin)
+	if scriptFirst == -1 {
+		return ""
 	}
-	return nil
+	scriptLast := strings.Index(str, end)
+	if scriptLast == -1 {
+		return ""
+	}
+	scriptFirstAdjusted := scriptFirst + len(begin)
+	if scriptFirstAdjusted >= scriptLast {
+		return ""
+	}
+
+	return str[scriptFirstAdjusted:scriptLast]
 }
 
 func RunScript(DB *gorm.DB, files, str, tipe, method string) (bool, error) {
@@ -172,32 +134,76 @@ func RunScript(DB *gorm.DB, files, str, tipe, method string) (bool, error) {
 	return run_script, nil
 }
 
-func GetScript(str string, method string) (out string) {
-	var begin, end string = "", ""
-	if method == "up" {
-		begin = "--Up"
-		end = "--EndUp"
-	} else {
-		begin = "--Down"
-		end = "--EndDown"
+/* Schema Script */
+func CreateMigrationSchema(arg string) error {
+	if arg == "" {
+		return fmt.Errorf("Failed create migration schema")
 	}
 
-	scriptFirst := strings.Index(str, begin)
-	if scriptFirst == -1 {
-		return ""
-	}
-	scriptLast := strings.Index(str, end)
-	if scriptLast == -1 {
-		return ""
-	}
-	scriptFirstAdjusted := scriptFirst + len(begin)
-	if scriptFirstAdjusted >= scriptLast {
-		return ""
+	files, err := os.OpenFile(SchemaLoc+Prefix()+arg+".sql", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
 	}
 
-	return str[scriptFirstAdjusted:scriptLast]
+	defer files.Close()
+	if _, err := files.WriteString("--Up\n/* Type Your SQL Code in Here */\n--EndUp\n--Down\n/* Type Your SQL Code in Here */\n--EndDown"); err != nil {
+		return err
+	}
+
+	fmt.Println("Success create migration schema " + arg)
+
+	return nil
 }
 
+func RunMigrationSchema(arg string, method string) error {
+	var FileList []string
+
+	DB := DB_Driver()
+
+	MigrationTable := MigrationTableCheck(DB, method)
+
+	if method == "up" {
+		if arg == "" {
+			for _, f := range migrate.ExecSchema() {
+				FileList = append(FileList, f)
+			}
+		} else {
+			FileList = append(FileList, arg)
+		}
+	} else {
+		if arg == "" {
+			for _, f := range MigrationTable {
+				FileList = append(FileList, f.Name)
+			}
+		} else {
+			FileList = append(FileList, arg)
+		}
+	}
+
+	for _, f := range FileList {
+		content, err := os.ReadFile(SchemaLoc + f)
+		if err != nil {
+			return err
+		}
+		script := ReadScript(string(content), method)
+		isRun, err := RunScript(DB, f, script, "schema", method)
+		if err != nil {
+			return err
+		}
+		if isRun {
+			if method == "up" {
+				fmt.Println("Success run migration schema " + f)
+			} else {
+				fmt.Println("Success rollback migration schema " + f)
+			}
+		}
+	}
+	return nil
+}
+
+/* End Schema Script */
+
+/* Seeder Script */
 func CreateMigrationSeeder(arg string) error {
 	if arg == "" {
 		return fmt.Errorf("Failed create migration seeder")
@@ -236,7 +242,7 @@ func RunMigrationSeeder(arg string) error {
 		if err != nil {
 			return err
 		}
-		script := GetScript(string(content), "up")
+		script := ReadScript(string(content), "up")
 		isRun, err := RunScript(DB, f, script, "seeder", "up")
 		if err != nil {
 			return err
@@ -247,3 +253,5 @@ func RunMigrationSeeder(arg string) error {
 	}
 	return nil
 }
+
+/* End Seeder Script */
