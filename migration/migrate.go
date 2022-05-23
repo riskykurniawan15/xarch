@@ -4,7 +4,6 @@ func ExecSchema() []string {
 	// type file name in directory schema
 	return []string{
 		"20220522135600_users.sql",
-		"20220523184621_notes.sql",
 	}
 }
 
