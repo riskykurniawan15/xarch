@@ -1,4 +1,4 @@
-package arch
+package elsa
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/riskykurniawan15/xarch/config"
+	"github.com/riskykurniawan15/xarch/driver"
 	migrate "github.com/riskykurniawan15/xarch/migration"
 )
 
@@ -35,7 +36,7 @@ func Prefix() string {
 
 func DB_Driver() *gorm.DB {
 	cfg := config.Configuration()
-	DB := StartDriver(cfg)
+	DB := driver.ConnectDB(cfg.DB)
 
 	return DB
 }

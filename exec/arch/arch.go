@@ -9,6 +9,7 @@ import (
 
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/driver"
+	"github.com/riskykurniawan15/xarch/exec/elsa"
 	"github.com/riskykurniawan15/xarch/exec/gate"
 	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
 	"gorm.io/gorm"
@@ -22,7 +23,7 @@ func Startup() {
 
 	switch cli {
 	case "elsa":
-		RunElsa()
+		elsa.RunElsa()
 	default:
 		RunApp()
 	}
