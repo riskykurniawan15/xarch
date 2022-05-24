@@ -44,51 +44,16 @@ func getLogWriter() zapcore.WriteSyncer {
 	return ws
 }
 
-func Info(msg string) {
-	sugar := InitLog()
-	sugar.Info(msg)
-}
-
-func Warning(msg string) {
-	sugar := InitLog()
-	sugar.Warn(msg)
-}
-
-func Error(msg string) {
-	sugar := InitLog()
-	sugar.Error(msg)
-}
-
-func Panic(msg string) {
-	sugar := InitLog()
-	sugar.Panic(msg)
-}
+// only message
+func Info(msg string)    { sugar := InitLog(); sugar.Info(msg) }
+func Warning(msg string) { sugar := InitLog(); sugar.Warn(msg) }
+func Error(msg string)   { sugar := InitLog(); sugar.Error(msg) }
+func Fatal(msg string)   { sugar := InitLog(); sugar.Fatal(msg) }
+func Panic(msg string)   { sugar := InitLog(); sugar.Panic(msg) }
 
 // with data
-func InfoW(msg string, data interface{}) {
-	sugar := InitLog()
-	sugar.Infow(msg,
-		"data", data,
-	)
-}
-
-func WarningW(msg string, data interface{}) {
-	sugar := InitLog()
-	sugar.Warn(msg,
-		"data", data,
-	)
-}
-
-func ErrorW(msg string, data interface{}) {
-	sugar := InitLog()
-	sugar.Error(msg,
-		"data", data,
-	)
-}
-
-func PanicW(msg string, data interface{}) {
-	sugar := InitLog()
-	sugar.Panic(msg,
-		"data", data,
-	)
-}
+func InfoW(msg string, data interface{})    { sugar := InitLog(); sugar.Infow(msg, "data", data) }
+func WarningW(msg string, data interface{}) { sugar := InitLog(); sugar.Warnw(msg, "data", data) }
+func ErrorW(msg string, data interface{})   { sugar := InitLog(); sugar.Errorw(msg, "data", data) }
+func FatalW(msg string, data interface{})   { sugar := InitLog(); sugar.Fatalw(msg, "data", data) }
+func PanicW(msg string, data interface{})   { sugar := InitLog(); sugar.Panicw(msg, "data", data) }
