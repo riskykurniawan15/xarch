@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	logger := logger.NewLogger()
 	logger.Info("Starting Application")
 	arch.Startup()
 }

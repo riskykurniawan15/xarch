@@ -9,6 +9,16 @@ import (
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
 
+type Logger struct {
+	Log *zap.SugaredLogger
+}
+
+func NewLogger() Logger {
+	return Logger{
+		Log: InitLog(),
+	}
+}
+
 func Prefix() string {
 	return "logger-" + time.Now().Format("2006-01-02")
 }
@@ -45,15 +55,15 @@ func getLogWriter() zapcore.WriteSyncer {
 }
 
 // only message
-func Info(msg string)    { sugar := InitLog(); sugar.Info(msg) }
-func Warning(msg string) { sugar := InitLog(); sugar.Warn(msg) }
-func Error(msg string)   { sugar := InitLog(); sugar.Error(msg) }
-func Fatal(msg string)   { sugar := InitLog(); sugar.Fatal(msg) }
-func Panic(msg string)   { sugar := InitLog(); sugar.Panic(msg) }
+func (Logs Logger) Info(msg string)    { Logs.Log.Info(msg) }
+func (Logs Logger) Warning(msg string) { Logs.Log.Warn(msg) }
+func (Logs Logger) Error(msg string)   { Logs.Log.Error(msg) }
+func (Logs Logger) Fatal(msg string)   { Logs.Log.Fatal(msg) }
+func (Logs Logger) Panic(msg string)   { Logs.Log.Panic(msg) }
 
 // with data
-func InfoW(msg string, data interface{})    { sugar := InitLog(); sugar.Infow(msg, "data", data) }
-func WarningW(msg string, data interface{}) { sugar := InitLog(); sugar.Warnw(msg, "data", data) }
-func ErrorW(msg string, data interface{})   { sugar := InitLog(); sugar.Errorw(msg, "data", data) }
-func FatalW(msg string, data interface{})   { sugar := InitLog(); sugar.Fatalw(msg, "data", data) }
-func PanicW(msg string, data interface{})   { sugar := InitLog(); sugar.Panicw(msg, "data", data) }
+func (Logs Logger) InfoW(msg string, data interface{})    { Logs.Log.Infow(msg, "data", data) }
+func (Logs Logger) WarningW(msg string, data interface{}) { Logs.Log.Warnw(msg, "data", data) }
+func (Logs Logger) ErrorW(msg string, data interface{})   { Logs.Log.Errorw(msg, "data", data) }
+func (Logs Logger) FatalW(msg string, data interface{})   { Logs.Log.Fatalw(msg, "data", data) }
+func (Logs Logger) PanicW(msg string, data interface{})   { Logs.Log.Panicw(msg, "data", data) }
