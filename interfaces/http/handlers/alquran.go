@@ -20,41 +20,49 @@ func NewAlquranHandlers(AS *services.AlquranService) *AlquranHandler {
 }
 
 func (handler AlquranHandler) ListChapter(ctx echo.Context) error {
+	var responseData entities.Response
+
 	data, err := handler.AlquranService.GetListChapter(ctx.Request().Context())
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+		responseData = entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
 			"error": err,
-		}))
+		})
 	}
 
-	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+	responseData = entities.ResponseFormater(http.StatusOK, map[string]interface{}{
 		"data": data,
-	}))
+	})
+
+	return ctx.JSON(responseData.Status, responseData)
 }
 
 func (handler AlquranHandler) DetailChapter(ctx echo.Context) error {
+	var responseData entities.Response
+
 	ID, err := strconv.Atoi(ctx.Param("ID"))
 
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+		responseData = entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
 			"error": err,
-		}))
+		})
 	}
 
 	if ID < 1 || ID > 114 {
-		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+		responseData = entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
 			"error": "Chapter min 1 and max 114",
-		}))
+		})
 	}
 
 	data, err := handler.AlquranService.GetDetailChapter(ctx.Request().Context(), ID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+		responseData = entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
 			"error": err,
-		}))
+		})
 	}
 
-	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+	responseData = entities.ResponseFormater(http.StatusOK, map[string]interface{}{
 		"data": data,
-	}))
+	})
+
+	return ctx.JSON(responseData.Status, responseData)
 }

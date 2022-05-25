@@ -80,7 +80,7 @@ var (
 	}
 )
 
-func GetResponseCodeMessage(code uint) string {
+func GetResponseCodeMessage(code int) string {
 	message := response_message[fmt.Sprint(code)]
 
 	if message == "" {
