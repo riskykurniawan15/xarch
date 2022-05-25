@@ -27,11 +27,11 @@ func (handler AlquranHandler) ListChapter(ctx echo.Context) error {
 		responseData = entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
 			"error": err,
 		})
+	} else {
+		responseData = entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+			"data": data,
+		})
 	}
-
-	responseData = entities.ResponseFormater(http.StatusOK, map[string]interface{}{
-		"data": data,
-	})
 
 	return ctx.JSON(responseData.Status, responseData)
 }
@@ -58,11 +58,11 @@ func (handler AlquranHandler) DetailChapter(ctx echo.Context) error {
 		responseData = entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
 			"error": err,
 		})
+	} else {
+		responseData = entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+			"data": data,
+		})
 	}
-
-	responseData = entities.ResponseFormater(http.StatusOK, map[string]interface{}{
-		"data": data,
-	})
 
 	return ctx.JSON(responseData.Status, responseData)
 }
