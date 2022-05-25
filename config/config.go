@@ -11,9 +11,10 @@ import (
 var log logger.Logger = logger.NewLogger()
 
 type Config struct {
-	Http HttpServer
-	DB   DBServer
-	RDB  RDBServer
+	Http  HttpServer
+	DB    DBServer
+	RDB   RDBServer
+	OTHER Other
 }
 
 type HttpServer struct {
@@ -34,6 +35,10 @@ type RDBServer struct {
 	RDB_PORT       int
 	RDB_PASS       string
 	RDB_DB_DEFAULT int
+}
+
+type Other struct {
+	AlQuranAPI string
 }
 
 func Configuration() Config {
@@ -75,6 +80,8 @@ func Configuration() Config {
 		log.PanicW("RDB_DB_DEFAULT must be number", err)
 		panic("RDB_DB_DEFAULT must be number")
 	}
+
+	cfg.OTHER.AlQuranAPI = os.Getenv("ALQURAN_API")
 
 	log.Info("Success for load all configuration")
 	return cfg
