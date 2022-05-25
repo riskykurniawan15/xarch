@@ -73,17 +73,17 @@ func EngineSwitch() {
 	flag.Parse()
 
 	cfg := config.Configuration()
-	DB, _ := StartDriver(cfg)
-	svc := domain.StartService(DB)
+	DB, RDB := StartDriver(cfg)
+	svc := domain.StartService(cfg, DB, RDB)
 
 	switch *engine_run {
 	case "http":
 		log.Info("Starting Http Engine")
 		echo.Start(cfg, svc)
 	case "*":
-		log.Error("Failed run engine")
 		fmt.Println("Please type your engine")
 		fmt.Println("go run main.go -engine=type")
+		log.Error("Failed run engine")
 	default:
 		fmt.Println("Failed run engine")
 		log.Error("Failed run engine")
