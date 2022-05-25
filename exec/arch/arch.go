@@ -18,7 +18,10 @@ import (
 	"github.com/riskykurniawan15/xarch/logger"
 )
 
-var log logger.Logger = logger.NewLogger()
+var (
+	cfg config.Config = config.Configuration()
+	log logger.Logger = logger.NewLogger()
+)
 
 func Startup() {
 	log.Info("Running startup")
@@ -59,7 +62,7 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 	EngineSwitch()
 }
 
-func StartDriver(cfg config.Config) (*gorm.DB, *redis.Client) {
+func StartDriver() (*gorm.DB, *redis.Client) {
 	log.Info("Start all driver")
 	db := driver.ConnectDB(cfg.DB)
 	rdb := driver.ConnectRedis(cfg.RDB)
@@ -72,8 +75,7 @@ func EngineSwitch() {
 	engine_run := flag.String("engine", "*", "type your egine")
 	flag.Parse()
 
-	cfg := config.Configuration()
-	DB, RDB := StartDriver(cfg)
+	DB, RDB := StartDriver()
 	svc := domain.StartService(cfg, DB, RDB)
 
 	switch *engine_run {
