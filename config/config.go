@@ -14,6 +14,7 @@ type Config struct {
 	Http  HttpServer
 	DB    DBServer
 	RDB   RDBServer
+	JWT   JWTConfig
 	OTHER Other
 }
 
@@ -35,6 +36,11 @@ type RDBServer struct {
 	RDB_PORT       int
 	RDB_PASS       string
 	RDB_DB_DEFAULT int
+}
+
+type JWTConfig struct {
+	SecretKey string
+	Expired   int
 }
 
 type Other struct {
@@ -79,6 +85,13 @@ func Configuration() Config {
 	if err != nil {
 		log.PanicW("RDB_DB_DEFAULT must be number", err)
 		panic("RDB_DB_DEFAULT must be number")
+	}
+
+	cfg.JWT.SecretKey = os.Getenv("JWT_SECRET_KEY")
+	cfg.JWT.Expired, err = strconv.Atoi(os.Getenv("JWT_EXPIRED"))
+	if err != nil {
+		log.PanicW("JWT_EXPIRED must be number", err)
+		panic("JWT_EXPIRED must be number")
 	}
 
 	cfg.OTHER.AlQuranAPI = os.Getenv("ALQURAN_API")
