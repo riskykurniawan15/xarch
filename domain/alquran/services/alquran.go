@@ -27,7 +27,7 @@ func (svc *AlquranService) GetListChapter(ctx context.Context) (*[]models.Chapte
 		return data, nil
 	}
 
-	data, err = svc.AlquranRepo.GetChapterAPi()
+	data, err = svc.AlquranRepo.GetChapterAPi(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (svc *AlquranService) GetDetailChapter(ctx context.Context, ID int) (*model
 		return data, nil
 	}
 
-	data, err = svc.AlquranRepo.GetDetailChapterAPi(ID)
+	data, err = svc.AlquranRepo.GetDetailChapterAPi(ctx, ID)
 	if err != nil {
 		return nil, err
 	}

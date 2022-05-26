@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,7 +10,7 @@ import (
 	"github.com/riskykurniawan15/xarch/domain/alquran/models"
 )
 
-func (Repo *AlquranRepo) GetChapterAPi() (*[]models.Chapter, error) {
+func (Repo *AlquranRepo) GetChapterAPi(ctx context.Context) (*[]models.Chapter, error) {
 	response, err := http.Get(Repo.cfg.OTHER.AlQuranAPI + "chapter")
 	if err != nil {
 		return nil, err
@@ -33,7 +34,7 @@ func (Repo *AlquranRepo) GetChapterAPi() (*[]models.Chapter, error) {
 	return &result, nil
 }
 
-func (Repo *AlquranRepo) GetDetailChapterAPi(ID int) (*models.Chapter, error) {
+func (Repo *AlquranRepo) GetDetailChapterAPi(ctx context.Context, ID int) (*models.Chapter, error) {
 	response, err := http.Get(Repo.cfg.OTHER.AlQuranAPI + "chapter/" + fmt.Sprint(ID))
 	if err != nil {
 		return nil, err
