@@ -55,7 +55,7 @@ func (svc UserService) LoginUser(ctx context.Context, user *models.User) (*model
 		return nil, fmt.Errorf("your password dont match")
 	}
 
-	token, err := svc.UserRepo.GenerateTokenUser(ctx, user)
+	token, err := svc.UserRepo.GenerateTokenUser(ctx, result)
 	if err != nil {
 		return nil, fmt.Errorf("failed generate token")
 	}
@@ -63,6 +63,15 @@ func (svc UserService) LoginUser(ctx context.Context, user *models.User) (*model
 	result.Token = token
 
 	return result, nil
+}
+
+func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*models.User, error) {
+	user, err := svc.UserRepo.SelectUserDetail(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	return user, nil
 }
 
 func (US UserService) GetListUser() ([]*models.User, error) {

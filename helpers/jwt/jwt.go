@@ -24,13 +24,13 @@ type JwtCustomClaims struct {
 	Email string `json:"email"`
 }
 
-func (JT JwtToken) GenerateToken(Structure *JwtCustomClaims) (string, error) {
+func (JT JwtToken) GenerateToken(CustomClaims *JwtCustomClaims) (string, error) {
 	var mySigningKey = []byte(JT.cfg.JWT.SecretKey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	claims["id"] = Structure.ID
-	claims["email"] = Structure.Email
+	claims["id"] = CustomClaims.ID
+	claims["email"] = CustomClaims.Email
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(JT.cfg.JWT.Expired)).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)

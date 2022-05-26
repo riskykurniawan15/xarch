@@ -64,6 +64,22 @@ func (repo UserRepo) SelectUserDetailByEmail(ctx context.Context, user *models.U
 	return model, nil
 }
 
+func (repo UserRepo) SelectUserDetail(ctx context.Context, user *models.User) (*models.User, error) {
+	var model *models.User
+
+	result := repo.DB.
+		WithContext(ctx).
+		Model(&models.User{}).
+		Where("id = ?", user.ID).
+		First(&model)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return model, nil
+}
+
 func (repo UserRepo) SelectUser() ([]*models.User, error) {
 	var model []*models.User
 

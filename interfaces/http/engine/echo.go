@@ -14,7 +14,7 @@ import (
 )
 
 func Start(cfg config.Config, svc *domain.Service) {
-	e := routers.Routers(svc)
+	e := routers.Routers(svc, cfg)
 	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%d", cfg.Http.Server, cfg.Http.Port)))
 
 	go func() {

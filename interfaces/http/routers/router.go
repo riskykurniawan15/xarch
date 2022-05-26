@@ -2,44 +2,51 @@ package routers
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/domain"
 	handlers "github.com/riskykurniawan15/xarch/interfaces/http/handlers"
+	"github.com/riskykurniawan15/xarch/interfaces/http/middleware"
 )
 
 type Handlers struct {
-	UserHandler    *handlers.UserHandler
-	AlquranHandler *handlers.AlquranHandler
+	MiddlewareHandler *middleware.MiddlewareHandler
+	UserHandler       *handlers.UserHandler
+	AlquranHandler    *handlers.AlquranHandler
 }
 
-func StartHandlers(svc *domain.Service) *Handlers {
+func StartHandlers(svc *domain.Service, cfg config.Config) *Handlers {
+	middleware := middleware.NewMiddlewareHandlers(cfg, svc.UserService)
 	users := handlers.NewUserHandlers(svc.UserService)
 	alquran := handlers.NewAlquranHandlers(svc.AlquranService)
 
 	return &Handlers{
+		middleware,
 		users,
 		alquran,
 	}
 }
 
-func Routers(svc *domain.Service) *echo.Echo {
-	handler := StartHandlers(svc)
+func Routers(svc *domain.Service, cfg config.Config) *echo.Echo {
+	handler := StartHandlers(svc, cfg)
+	middleware := handler.MiddlewareHandler
 	user_handler := handler.UserHandler
 	alquran_handler := handler.AlquranHandler
 
-	e := echo.New()
-	e.POST("/register", user_handler.Register)
-	e.POST("/login", user_handler.Login)
+	engine := echo.New()
+	engine.POST("/register", user_handler.Register)
+	engine.POST("/login", user_handler.Login)
 
-	user_group := e.Group("/user")
+	user_group := engine.Group("/user")
 	{
-		user_group.GET("/", user_handler.Index)
+		user_group.Use(middleware.UserMiddleware)
+		user_group.GET("/profile", user_handler.GetProfile)
 	}
 
-	alquran_group := e.Group("/alquran")
+	alquran_group := engine.Group("/alquran")
 	{
 		alquran_group.GET("/chapter", alquran_handler.ListChapter)
 		alquran_group.GET("/chapter/:ID", alquran_handler.DetailChapter)
 	}
 
-	return e
+	return engine
 }

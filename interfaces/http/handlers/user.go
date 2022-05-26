@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -89,6 +90,26 @@ func (handler UserHandler) Login(ctx echo.Context) error {
 	}
 
 	data, err := handler.UserService.LoginUser(ctx.Request().Context(), &pyld)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
+func (handler UserHandler) GetProfile(ctx echo.Context) error {
+	ID, err := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.GetDetailUser(ctx.Request().Context(), &models.User{ID: uint(ID)})
 	if err != nil {
 		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
 			"error": err.Error(),
