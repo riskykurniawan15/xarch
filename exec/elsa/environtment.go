@@ -20,7 +20,14 @@ DB_NAME=xarch
 RDB_ADDRESS=127.0.0.1
 RDB_PORT=6379
 RDB_PASS=
-RDB_DB_DEFAULT=0`
+RDB_DB_DEFAULT=0
+
+#JWT
+JWT_SECRET_KEY="SecretKey"
+JWT_EXPIRED=24  #IN HOURS
+
+#OTHER
+ALQURAN_API="https://quranlci.com/api/"`
 
 func BuildEnvirontment() error {
 	data, err := ioutil.ReadFile(".env.example")
