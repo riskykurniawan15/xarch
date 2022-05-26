@@ -63,6 +63,43 @@ func (handler UserHandler) Register(ctx echo.Context) error {
 	}))
 }
 
+type UserLoginForm struct {
+	Email    string `form:"email"    validate:"required,max=100,email" json:"email"`
+	Password string `form:"password" validate:"required,max=100"       json:"-"`
+}
+
+func (handler UserHandler) Login(ctx echo.Context) error {
+	form := new(UserLoginForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err := validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	pyld := models.User{
+		Email:    form.Email,
+		Password: form.Password,
+	}
+
+	data, err := handler.UserService.LoginUser(ctx.Request().Context(), &pyld)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
 func (handler UserHandler) Index(ctx echo.Context) error {
 	User, err := handler.UserService.GetListUser()
 
@@ -77,25 +114,25 @@ func (handler UserHandler) Index(ctx echo.Context) error {
 }
 
 func (handler UserHandler) Show(ctx echo.Context) error {
-	return ctx.JSON(http.StatusNotFound, map[string]string{
-		"status": "404",
-	})
+	return ctx.JSON(http.StatusNotFound, entities.ResponseFormater(http.StatusNotFound, map[string]interface{}{
+		"error": "error",
+	}))
 }
 
 func (handler UserHandler) Store(ctx echo.Context) error {
-	return ctx.JSON(http.StatusNotFound, map[string]string{
-		"status": "404",
-	})
+	return ctx.JSON(http.StatusNotFound, entities.ResponseFormater(http.StatusNotFound, map[string]interface{}{
+		"error": "error",
+	}))
 }
 
 func (handler UserHandler) Update(ctx echo.Context) error {
-	return ctx.JSON(http.StatusNotFound, map[string]string{
-		"status": "404",
-	})
+	return ctx.JSON(http.StatusNotFound, entities.ResponseFormater(http.StatusNotFound, map[string]interface{}{
+		"error": "error",
+	}))
 }
 
 func (handler UserHandler) Delete(ctx echo.Context) error {
-	return ctx.JSON(http.StatusNotFound, map[string]string{
-		"status": "404",
-	})
+	return ctx.JSON(http.StatusNotFound, entities.ResponseFormater(http.StatusNotFound, map[string]interface{}{
+		"error": "error",
+	}))
 }

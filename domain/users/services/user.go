@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/riskykurniawan15/xarch/domain/users/models"
@@ -28,10 +29,38 @@ func (svc UserService) RegisterUser(ctx context.Context, user *models.User) (*mo
 	user.Email = strings.ToLower(user.Email)
 	user.Password = Password
 
+	_, err = svc.UserRepo.SelectUserDetailByEmail(ctx, user)
+	if err == nil {
+		return nil, fmt.Errorf("failed register user, user is registered")
+	}
+
 	result, err := svc.UserRepo.InsertUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
+
+	return result, nil
+}
+
+func (svc UserService) LoginUser(ctx context.Context, user *models.User) (*models.User, error) {
+	user.Email = strings.ToLower(user.Email)
+
+	result, err := svc.UserRepo.SelectUserDetailByEmail(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("user not registered")
+	}
+
+	err = bcrypt.CompareHash(result.Password, user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("your password dont match")
+	}
+
+	token, err := svc.UserRepo.GenerateTokenUser(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("failed generate token")
+	}
+
+	result.Token = token
 
 	return result, nil
 }

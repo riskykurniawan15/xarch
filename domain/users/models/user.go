@@ -8,6 +8,7 @@ type User struct {
 	Email    string `gorm:"column:email"                       json:"email"`
 	Password string `gorm:"column:password"                    json:"-"`
 	Gender   string `gorm:"column:gender"                      json:"gender"`
+	Token    string `gorm:"-"                                  json:"token,omitempty"`
 }
 
 func (User) TableName() string {

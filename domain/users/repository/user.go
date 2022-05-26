@@ -3,18 +3,38 @@ package repository
 import (
 	"context"
 
+	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/domain/users/models"
+	"github.com/riskykurniawan15/xarch/helpers/jwt"
 	"gorm.io/gorm"
 )
 
 type UserRepo struct {
-	DB *gorm.DB
+	cfg config.Config
+	DB  *gorm.DB
 }
 
-func NewUserRepo(DB *gorm.DB) *UserRepo {
+func NewUserRepo(cfg config.Config, DB *gorm.DB) *UserRepo {
 	return &UserRepo{
+		cfg,
 		DB,
 	}
+}
+
+func (repo UserRepo) GenerateTokenUser(ctx context.Context, user *models.User) (string, error) {
+	NewJwt := jwt.NewJwtToken(repo.cfg)
+
+	pyld := &jwt.JwtData{
+		ID:    user.ID,
+		Email: user.Email,
+	}
+
+	token, err := NewJwt.GenerateToken(pyld)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 func (repo UserRepo) InsertUser(ctx context.Context, user *models.User) (*models.User, error) {
@@ -26,6 +46,22 @@ func (repo UserRepo) InsertUser(ctx context.Context, user *models.User) (*models
 	}
 
 	return user, nil
+}
+
+func (repo UserRepo) SelectUserDetailByEmail(ctx context.Context, user *models.User) (*models.User, error) {
+	var model *models.User
+
+	result := repo.DB.
+		WithContext(ctx).
+		Model(&models.User{}).
+		Where("email = ?", user.Email).
+		First(&model)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return model, nil
 }
 
 func (repo UserRepo) SelectUser() ([]*models.User, error) {

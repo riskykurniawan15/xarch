@@ -28,6 +28,7 @@ func Routers(svc *domain.Service) *echo.Echo {
 
 	e := echo.New()
 	e.POST("/register", user_handler.Register)
+	e.POST("/login", user_handler.Login)
 
 	user_group := e.Group("/user")
 	{

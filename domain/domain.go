@@ -23,7 +23,7 @@ type Service struct {
 }
 
 func StartRepo(cfg config.Config, DB *gorm.DB, RDB *redis.Client) *Repo {
-	UserRepo := UserRepo.NewUserRepo(DB)
+	UserRepo := UserRepo.NewUserRepo(cfg, DB)
 	AlquranRepo := AlquranRepo.NewAlquranRepo(cfg, RDB)
 
 	return &Repo{
