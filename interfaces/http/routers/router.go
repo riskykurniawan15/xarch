@@ -27,6 +27,8 @@ func Routers(svc *domain.Service) *echo.Echo {
 	alquran_handler := handler.AlquranHandler
 
 	e := echo.New()
+	e.POST("/register", user_handler.Register)
+
 	user_group := e.Group("/user")
 	{
 		user_group.GET("/", user_handler.Index)

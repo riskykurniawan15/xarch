@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+
+	"github.com/riskykurniawan15/xarch/domain/users/models"
 	"github.com/riskykurniawan15/xarch/domain/users/services"
+	"github.com/riskykurniawan15/xarch/interfaces/http/entities"
 )
 
 type UserHandler struct {
@@ -18,39 +22,80 @@ func NewUserHandlers(US *services.UserService) *UserHandler {
 	}
 }
 
-func (handler UserHandler) Index(c echo.Context) error {
+var (
+	validate *validator.Validate = validator.New()
+)
+
+type UserRegisterForm struct {
+	Name     string `form:"name"     validate:"required,max=100"                  json:"name"`
+	Email    string `form:"email"    validate:"required,max=100,email"            json:"email"`
+	Password string `form:"password" validate:"required,max=100"                  json:"-"`
+	Confirm  string `form:"confirm"  validate:"required,max=100,eqfield=Password" json:"-"`
+	Gender   string `form:"gender"   validate:"required,oneof=male female"        json:"gender"`
+}
+
+func (handler UserHandler) Register(ctx echo.Context) error {
+	form := new(UserRegisterForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err := validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	pyld := models.SetUserData(form.Name, form.Email, form.Password, form.Gender)
+
+	data, err := handler.UserService.RegisterUser(ctx.Request().Context(), pyld)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	return ctx.JSON(http.StatusCreated, entities.ResponseFormater(http.StatusCreated, map[string]interface{}{
+		"data": data,
+	}))
+}
+
+func (handler UserHandler) Index(ctx echo.Context) error {
 	User, err := handler.UserService.GetListUser()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{
 			"status": "504",
 			"error":  fmt.Sprint(err),
 		})
 	}
 
-	return c.JSON(http.StatusOK, User)
+	return ctx.JSON(http.StatusOK, User)
 }
 
-func (handler UserHandler) Show(c echo.Context) error {
-	return c.JSON(http.StatusNotFound, map[string]string{
+func (handler UserHandler) Show(ctx echo.Context) error {
+	return ctx.JSON(http.StatusNotFound, map[string]string{
 		"status": "404",
 	})
 }
 
-func (handler UserHandler) Store(c echo.Context) error {
-	return c.JSON(http.StatusNotFound, map[string]string{
+func (handler UserHandler) Store(ctx echo.Context) error {
+	return ctx.JSON(http.StatusNotFound, map[string]string{
 		"status": "404",
 	})
 }
 
-func (handler UserHandler) Update(c echo.Context) error {
-	return c.JSON(http.StatusNotFound, map[string]string{
+func (handler UserHandler) Update(ctx echo.Context) error {
+	return ctx.JSON(http.StatusNotFound, map[string]string{
 		"status": "404",
 	})
 }
 
-func (handler UserHandler) Delete(c echo.Context) error {
-	return c.JSON(http.StatusNotFound, map[string]string{
+func (handler UserHandler) Delete(ctx echo.Context) error {
+	return ctx.JSON(http.StatusNotFound, map[string]string{
 		"status": "404",
 	})
 }
