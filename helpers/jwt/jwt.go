@@ -19,12 +19,12 @@ func NewJwtToken(cfg config.Config) *JwtToken {
 	}
 }
 
-type JwtData struct {
-	ID    uint
-	Email string
+type JwtCustomClaims struct {
+	ID    uint   `json:"id"`
+	Email string `json:"email"`
 }
 
-func (JT JwtToken) GenerateToken(Structure *JwtData) (string, error) {
+func (JT JwtToken) GenerateToken(Structure *JwtCustomClaims) (string, error) {
 	var mySigningKey = []byte(JT.cfg.JWT.SecretKey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -41,7 +41,7 @@ func (JT JwtToken) GenerateToken(Structure *JwtData) (string, error) {
 	return tokenString, nil
 }
 
-func (JT JwtToken) ClaimsToken(token string) (*JwtData, error) {
+func (JT JwtToken) ClaimsToken(token string) (*JwtCustomClaims, error) {
 	var mySigningKey = []byte(JT.cfg.JWT.SecretKey)
 
 	TokenClaims, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
@@ -62,7 +62,7 @@ func (JT JwtToken) ClaimsToken(token string) (*JwtData, error) {
 			return nil, fmt.Errorf("malformed id")
 		}
 
-		data := &JwtData{
+		data := &JwtCustomClaims{
 			ID:    uint(id),
 			Email: fmt.Sprint(claims["email"]),
 		}

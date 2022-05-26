@@ -24,7 +24,7 @@ func NewUserRepo(cfg config.Config, DB *gorm.DB) *UserRepo {
 func (repo UserRepo) GenerateTokenUser(ctx context.Context, user *models.User) (string, error) {
 	NewJwt := jwt.NewJwtToken(repo.cfg)
 
-	pyld := &jwt.JwtData{
+	pyld := &jwt.JwtCustomClaims{
 		ID:    user.ID,
 		Email: user.Email,
 	}
