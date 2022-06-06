@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ import (
 	"github.com/riskykurniawan15/xarch/driver"
 	"github.com/riskykurniawan15/xarch/exec/elsa"
 	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
+	consumer "github.com/riskykurniawan15/xarch/interfaces/kafka_consumer"
 	"github.com/riskykurniawan15/xarch/logger"
 )
 
@@ -82,10 +84,17 @@ func EngineSwitch() {
 	case "http":
 		log.Info("Starting Http Engine")
 		echo.Start(cfg, svc)
+	case "consumer":
+		log.Info("Starting Consumer Engine")
+		consumer.ConsumerRun(cfg, log, svc)
 	case "*":
-		fmt.Println("Please type your engine")
-		fmt.Println("go run main.go -engine=type")
-		log.Error("Failed run engine")
+		log.Info("Starting All Engine")
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() { defer wg.Done(); echo.Start(cfg, svc) }()
+		wg.Add(1)
+		go func() { defer wg.Done(); consumer.ConsumerRun(cfg, log, svc) }()
+		wg.Wait()
 	default:
 		fmt.Println("Failed run engine")
 		log.Error("Failed run engine")
