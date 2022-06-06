@@ -77,18 +77,22 @@ func EngineSwitch() {
 	engine_run := flag.String("engine", "*", "type your egine")
 	flag.Parse()
 
-	DB, RDB := StartDriver()
-	svc := domain.StartService(cfg, DB, RDB)
-
 	switch *engine_run {
 	case "http":
+		DB, RDB := StartDriver()
+		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting Http Engine")
 		echo.Start(cfg, svc)
 	case "consumer":
+		DB, RDB := StartDriver()
+		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting Consumer Engine")
 		consumer.ConsumerRun(cfg, log, svc)
 	case "*":
+		DB, RDB := StartDriver()
+		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting All Engine")
+
 		var wg sync.WaitGroup
 		wg.Add(1)
 		go func() { defer wg.Done(); echo.Start(cfg, svc) }()
