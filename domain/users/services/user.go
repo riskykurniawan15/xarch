@@ -39,6 +39,11 @@ func (svc UserService) RegisterUser(ctx context.Context, user *models.User) (*mo
 		return nil, err
 	}
 
+	err = svc.UserRepo.VerifiedEmailPublish(ctx, result)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	return result, nil
 }
 

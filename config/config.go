@@ -14,6 +14,7 @@ type Config struct {
 	Http  HttpServer
 	DB    DBServer
 	RDB   RDBServer
+	KAFKA KafkaConfig
 	JWT   JWTConfig
 	OTHER Other
 }
@@ -36,6 +37,13 @@ type RDBServer struct {
 	RDB_PORT       int
 	RDB_PASS       string
 	RDB_DB_DEFAULT int
+}
+
+type KafkaConfig struct {
+	KAFKA_SERVER         string
+	KAFKA_PORT           int
+	KAFKA_CONSUMER_GROUP string
+	TOPIC_EMAIL_SENDER   string
 }
 
 type JWTConfig struct {
@@ -87,14 +95,23 @@ func Configuration() Config {
 		panic("RDB_DB_DEFAULT must be number")
 	}
 
+	cfg.KAFKA.KAFKA_SERVER = os.Getenv("KAFKA_SERVER")
+	cfg.KAFKA.KAFKA_PORT, err = strconv.Atoi(os.Getenv("KAFKA_PORT"))
+	if err != nil {
+		log.PanicW("KAFKA_PORT must be number", err)
+		panic("KAFKA_PORT must be number")
+	}
+	cfg.KAFKA.KAFKA_CONSUMER_GROUP = os.Getenv("KAFKA_CONSUMER_GROUP")
+	cfg.KAFKA.TOPIC_EMAIL_SENDER = os.Getenv("TOPIC_EMAIL_SENDER")
+
+	cfg.OTHER.AlQuranAPI = os.Getenv("ALQURAN_API")
+
 	cfg.JWT.SecretKey = os.Getenv("JWT_SECRET_KEY")
 	cfg.JWT.Expired, err = strconv.Atoi(os.Getenv("JWT_EXPIRED"))
 	if err != nil {
 		log.PanicW("JWT_EXPIRED must be number", err)
 		panic("JWT_EXPIRED must be number")
 	}
-
-	cfg.OTHER.AlQuranAPI = os.Getenv("ALQURAN_API")
 
 	log.Info("Success for load all configuration")
 	return cfg

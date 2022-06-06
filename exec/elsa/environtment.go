@@ -22,12 +22,20 @@ RDB_PORT=6379
 RDB_PASS=
 RDB_DB_DEFAULT=0
 
-#JWT
-JWT_SECRET_KEY="SecretKey"
-JWT_EXPIRED=24  #IN HOURS
+#KAFKA
+KAFKA_SERVER=localhost
+KAFKA_PORT=9092
+KAFKA_CONSUMER_GROUP=
+
+#TOPIC_KAFKA
+TOPIC_EMAIL_VERIFIED=""
 
 #OTHER
-ALQURAN_API="https://quranlci.com/api/"`
+ALQURAN_API="https://quranlci.com/api/"
+
+#JWT
+JWT_SECRET_KEY="SecretKey"
+JWT_EXPIRED=24  #IN HOURS`
 
 func BuildEnvirontment() error {
 	data, err := ioutil.ReadFile(".env.example")
