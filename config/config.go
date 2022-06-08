@@ -14,6 +14,7 @@ type Config struct {
 	Http  HttpServer
 	DB    DBServer
 	RDB   RDBServer
+	Email EmailSender
 	KAFKA KafkaConfig
 	JWT   JWTConfig
 	OTHER Other
@@ -37,6 +38,14 @@ type RDBServer struct {
 	RDB_PORT       int
 	RDB_PASS       string
 	RDB_DB_DEFAULT int
+}
+
+type EmailSender struct {
+	EMAIL_HOST     string
+	EMAIL_PORT     int
+	EMAIL_NAME     string
+	EMAIL_EMAIL    string
+	EMAIL_PASSWORD string
 }
 
 type KafkaConfig struct {
@@ -94,6 +103,16 @@ func Configuration() Config {
 		log.PanicW("RDB_DB_DEFAULT must be number", err)
 		panic("RDB_DB_DEFAULT must be number")
 	}
+
+	cfg.Email.EMAIL_HOST = os.Getenv("EMAIL_HOST")
+	cfg.Email.EMAIL_PORT, err = strconv.Atoi(os.Getenv("EMAIL_PORT"))
+	if err != nil {
+		log.PanicW("EMAIL_PORT must be number", err)
+		panic("EMAIL_PORT must be number")
+	}
+	cfg.Email.EMAIL_NAME = os.Getenv("EMAIL_NAME")
+	cfg.Email.EMAIL_EMAIL = os.Getenv("EMAIL_EMAIL")
+	cfg.Email.EMAIL_PASSWORD = os.Getenv("EMAIL_PASSWORD")
 
 	cfg.KAFKA.KAFKA_SERVER = os.Getenv("KAFKA_SERVER")
 	cfg.KAFKA.KAFKA_PORT, err = strconv.Atoi(os.Getenv("KAFKA_PORT"))
