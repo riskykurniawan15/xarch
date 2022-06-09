@@ -36,6 +36,7 @@ type DBServer struct {
 type RDBServer struct {
 	RDB_ADDRESS    string
 	RDB_PORT       int
+	RDB_USER       string
 	RDB_PASS       string
 	RDB_DB_DEFAULT int
 }
@@ -97,6 +98,7 @@ func Configuration() Config {
 		log.PanicW("RDB_PORT must be number", err)
 		panic("RDB_PORT must be number")
 	}
+	cfg.RDB.RDB_USER = os.Getenv("RDB_USER")
 	cfg.RDB.RDB_PASS = os.Getenv("RDB_PASS")
 	cfg.RDB.RDB_DB_DEFAULT, err = strconv.Atoi(os.Getenv("RDB_DB_DEFAULT"))
 	if err != nil {
