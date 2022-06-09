@@ -46,4 +46,7 @@ require (
 require (
 	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
+	github.com/xhit/go-simple-mail/v2 v2.11.0
 )
+
+require github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
