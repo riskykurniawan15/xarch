@@ -3,6 +3,7 @@ package kafka_consumer
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/segmentio/kafka-go"
 
@@ -37,34 +38,38 @@ func ConsumerRun(cfg config.Config, log logger.Logger, svc *domain.Service) {
 		GroupID: cfg.KAFKA.KAFKA_CONSUMER_GROUP,
 	}
 
-	Consume(log, kafka_config, cfg.KAFKA.TOPIC_EMAIL_SENDER, handler.EmailSenderHandler.SendVerification)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		Consume(log, kafka_config, cfg.KAFKA.TOPIC_EMAIL_SENDER, handler.EmailSenderHandler.SendVerification)
+	}()
+	wg.Wait()
 }
 
 func Consume(log logger.Logger, kafka_config kafka.ReaderConfig, topic string, handler func(context.Context, string, string) error) {
-	go func() {
-		ctx := context.Background()
-		kafka_config.Topic = topic
-		r := kafka.NewReader(kafka_config)
-		log.InfoW("Kafka consume running", map[string]string{
+	ctx := context.Background()
+	kafka_config.Topic = topic
+	r := kafka.NewReader(kafka_config)
+	log.InfoW("Kafka consume running", map[string]string{
+		"topic": topic,
+	})
+
+	for {
+		m, err := r.ReadMessage(ctx)
+		if err != nil {
+			break
+		}
+
+		log.InfoW("Incomming Message", map[string]string{
 			"topic": topic,
+			"key":   string(m.Key),
+			"value": string(m.Value),
 		})
+		handler(ctx, string(m.Key), string(m.Value))
+	}
 
-		for {
-			m, err := r.ReadMessage(ctx)
-			if err != nil {
-				break
-			}
-
-			log.InfoW("Incomming Message", map[string]string{
-				"topic": topic,
-				"key":   string(m.Key),
-				"value": string(m.Value),
-			})
-			handler(ctx, string(m.Key), string(m.Value))
-		}
-
-		if err := r.Close(); err != nil {
-			log.FatalW("failed to close reader:", err)
-		}
-	}()
+	if err := r.Close(); err != nil {
+		log.FatalW("failed to close reader:", err)
+	}
 }

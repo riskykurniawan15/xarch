@@ -73,6 +73,7 @@ func StartDriver() (*gorm.DB, *redis.Client) {
 }
 
 func EngineSwitch() {
+	var wg sync.WaitGroup
 	log.Info("Running Switch Engine")
 	engine_run := flag.String("engine", "*", "type your egine")
 	flag.Parse()
@@ -87,20 +88,19 @@ func EngineSwitch() {
 		DB, RDB := StartDriver()
 		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting Consumer Engine")
-		consumer.ConsumerRun(cfg, log, svc)
+		wg.Add(1)
+		go func() { defer wg.Done(); consumer.ConsumerRun(cfg, log, svc) }()
 	case "*":
 		DB, RDB := StartDriver()
 		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting All Engine")
-
-		var wg sync.WaitGroup
 		wg.Add(1)
 		go func() { defer wg.Done(); echo.Start(cfg, svc) }()
 		wg.Add(1)
 		go func() { defer wg.Done(); consumer.ConsumerRun(cfg, log, svc) }()
-		wg.Wait()
 	default:
-		fmt.Println("Failed run engine")
 		log.Error("Failed run engine")
 	}
+
+	wg.Wait()
 }
