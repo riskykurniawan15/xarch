@@ -80,14 +80,6 @@ func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*m
 	return user, nil
 }
 
-func (US UserService) GetListUser() ([]*models.User, error) {
-	User, err := US.UserRepo.SelectUser()
-	if err != nil {
-		return nil, err
-	}
-	return User, nil
-}
-
 func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, error) {
 	exp := time.Now().Add(time.Minute * 10)
 
