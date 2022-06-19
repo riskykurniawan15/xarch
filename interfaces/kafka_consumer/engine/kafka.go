@@ -34,6 +34,7 @@ func (EL EngineLib) Consume(topic string, handler func(context.Context, string, 
 	go func() {
 		defer wg.Done()
 		ctx := context.Background()
+		ctx = context.WithValue(ctx, "topic", topic)
 		EL.kfk.Topic = topic
 		r := kafka.NewReader(EL.kfk)
 		EL.log.InfoW("Kafka starting to consume", map[string]string{

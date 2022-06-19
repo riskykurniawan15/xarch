@@ -12,8 +12,8 @@ type Handlers struct {
 	EmailSenderHandler *handlers.EmailSenderHandler
 }
 
-func StartHandlers(svc *domain.Service) *Handlers {
-	email_sender := handlers.NewEmailSenderHandler(svc.UserService)
+func StartHandlers(log logger.Logger, svc *domain.Service) *Handlers {
+	email_sender := handlers.NewEmailSenderHandler(log, svc.UserService)
 
 	return &Handlers{
 		email_sender,
@@ -21,7 +21,7 @@ func StartHandlers(svc *domain.Service) *Handlers {
 }
 
 func ConsumerRun(cfg config.Config, log logger.Logger, svc *domain.Service) {
-	handler := StartHandlers(svc)
+	handler := StartHandlers(log, svc)
 	email_sender := handler.EmailSenderHandler
 	en := engine.NewKafkaEngine(cfg, log)
 

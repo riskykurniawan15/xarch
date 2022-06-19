@@ -8,19 +8,23 @@ import (
 
 	"github.com/riskykurniawan15/xarch/domain/users/models"
 	"github.com/riskykurniawan15/xarch/domain/users/services"
+	"github.com/riskykurniawan15/xarch/logger"
 )
 
 type EmailSenderHandler struct {
+	log         logger.Logger
 	UserService *services.UserService
 }
 
-func NewEmailSenderHandler(US *services.UserService) *EmailSenderHandler {
+func NewEmailSenderHandler(log logger.Logger, US *services.UserService) *EmailSenderHandler {
 	return &EmailSenderHandler{
+		log,
 		US,
 	}
 }
 
 func (handler EmailSenderHandler) SendVerification(ctx context.Context, keys, value string) error {
+	handler.log.Info(fmt.Sprint(ctx.Value("topic")))
 	key := strings.Split(keys, "_")
 	UserID, err := strconv.Atoi(key[1])
 	if err != nil {
@@ -32,12 +36,10 @@ func (handler EmailSenderHandler) SendVerification(ctx context.Context, keys, va
 		Email: value,
 	}
 
-	result, err := handler.UserService.SendEmailVerification(ctx, &user)
+	_, err = handler.UserService.SendEmailVerification(ctx, &user)
 	if err != nil {
 		return err
 	}
-
-	fmt.Print(result)
 
 	return nil
 }
