@@ -22,8 +22,9 @@ func StartHandlers(svc *domain.Service) *Handlers {
 
 func ConsumerRun(cfg config.Config, log logger.Logger, svc *domain.Service) {
 	handler := StartHandlers(svc)
+	email_sender := handler.EmailSenderHandler
 	en := engine.NewKafkaEngine(cfg, log)
 
 	// to consume message
-	en.Consume(cfg.KAFKA.TOPIC_EMAIL_SENDER, handler.EmailSenderHandler.SendVerification)
+	en.Consume(cfg.KAFKA.TOPIC_EMAIL_SENDER, email_sender.SendVerification)
 }
