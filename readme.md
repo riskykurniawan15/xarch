@@ -2,6 +2,9 @@
 ### Build env if not exist
 `elsa create_env`
 
+### Flush all log file
+`elsa create_env`
+
 ### Create new domain
 `elsa create_domain ${name}`
 

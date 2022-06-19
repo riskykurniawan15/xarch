@@ -20,6 +20,8 @@ func RunElsa() {
 
 		if cmd == "create_env" {
 			err = BuildEnvirontment()
+		} else if cmd == "flush_log" {
+			err = FlushLog()
 		} else if cmd == "create_domain" {
 			err = BuildDomain(arg)
 		} else if cmd == "create_migration_schema" {
