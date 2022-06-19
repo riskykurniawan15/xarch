@@ -36,6 +36,7 @@ func Routers(svc *domain.Service, cfg config.Config) *echo.Echo {
 	engine.POST("/register", user_handler.Register)
 	engine.POST("/login", user_handler.Login)
 
+	engine.GET("/user/verif/:token", user_handler.Verification)
 	user_group := engine.Group("/user")
 	{
 		user_group.Use(middleware.UserMiddleware)

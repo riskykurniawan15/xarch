@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/riskykurniawan15/xarch/domain/users/models"
 	"github.com/riskykurniawan15/xarch/domain/users/repository"
@@ -85,4 +86,31 @@ func (US UserService) GetListUser() ([]*models.User, error) {
 		return nil, err
 	}
 	return User, nil
+}
+
+func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, error) {
+	exp := time.Now().Add(time.Minute * 10)
+
+	TokenHash, err := bcrypt.Hash(exp.Format("2006-01-02 15:04:05"))
+	if err != nil {
+		return nil, err
+	}
+
+	token := &models.UserToken{
+		UserID:  user.ID,
+		Method:  "verified",
+		Token:   TokenHash,
+		Expired: exp,
+	}
+
+	_, err = svc.UserRepo.InsertTokenEmailVerfied(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+
+	err = svc.UserRepo.EmailVerfiedSender(ctx, user, token)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }

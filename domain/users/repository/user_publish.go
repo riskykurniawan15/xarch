@@ -22,7 +22,7 @@ func (repo UserRepo) VerifiedEmailPublish(ctx context.Context, user *models.User
 
 	err := w.WriteMessages(ctx,
 		kafka.Message{
-			Key:   []byte(user.Email + "_verified"),
+			Key:   []byte("verification_" + fmt.Sprint(user.ID)),
 			Value: []byte(user.Email),
 		},
 	)

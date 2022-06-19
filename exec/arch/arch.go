@@ -26,7 +26,7 @@ var (
 )
 
 func Startup() {
-	log.Info("Running startup")
+	log.InfoW("Running startup", cfg)
 	var cli string = ""
 	if len(os.Args) > 1 {
 		cli = strings.ToLower(os.Args[1])

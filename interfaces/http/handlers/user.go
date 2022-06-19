@@ -121,6 +121,13 @@ func (handler UserHandler) GetProfile(ctx echo.Context) error {
 	}))
 }
 
+func (handler UserHandler) Verification(ctx echo.Context) error {
+	token := ctx.Param("token")
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": token,
+	}))
+}
+
 func (handler UserHandler) Index(ctx echo.Context) error {
 	User, err := handler.UserService.GetListUser()
 

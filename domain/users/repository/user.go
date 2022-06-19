@@ -80,6 +80,17 @@ func (repo UserRepo) SelectUserDetail(ctx context.Context, user *models.User) (*
 	return model, nil
 }
 
+func (repo UserRepo) InsertTokenEmailVerfied(ctx context.Context, token *models.UserToken) (*models.UserToken, error) {
+	if err := repo.DB.
+		WithContext(ctx).
+		Create(token).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
 func (repo UserRepo) SelectUser() ([]*models.User, error) {
 	var model []*models.User
 
