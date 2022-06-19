@@ -62,3 +62,26 @@ func (svc *AlquranService) GetDetailChapter(ctx context.Context, ID int) (*model
 
 	return data, nil
 }
+
+func (svc *AlquranService) GetListVerse(ctx context.Context, ID int) (*[]models.ChapterVerse, error) {
+	data, err := svc.AlquranRepo.GetChapterVerse(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if data != nil {
+		return data, nil
+	}
+
+	data, err = svc.AlquranRepo.GetVerseAPi(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = svc.AlquranRepo.SaveChapterVerse(ctx, ID, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

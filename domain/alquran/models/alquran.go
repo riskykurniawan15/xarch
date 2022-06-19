@@ -30,3 +30,8 @@ type Verse struct {
 		English   string `json:"english"`
 	} `json:"verse_translate"`
 }
+
+type ChapterVerse struct {
+	Chapter []Chapter `json:"chapter"`
+	Verse   []Verse   `json:"verse"`
+}
