@@ -51,7 +51,7 @@ func Consume(log logger.Logger, kafka_config kafka.ReaderConfig, topic string, h
 	ctx := context.Background()
 	kafka_config.Topic = topic
 	r := kafka.NewReader(kafka_config)
-	log.InfoW("Kafka consume running", map[string]string{
+	log.InfoW("Kafka starting to consume", map[string]string{
 		"topic": topic,
 	})
 
