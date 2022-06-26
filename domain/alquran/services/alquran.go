@@ -85,3 +85,26 @@ func (svc *AlquranService) GetListVerse(ctx context.Context, ID int) (*[]models.
 
 	return data, nil
 }
+
+func (svc *AlquranService) GetDetailVerse(ctx context.Context, ID, VerseNumber int) (*models.Verse, error) {
+	data, err := svc.AlquranRepo.GetDetailVerse(ctx, ID, VerseNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	if data != nil {
+		return data, nil
+	}
+
+	data, err = svc.AlquranRepo.GetDetailVerseAPi(ctx, ID, VerseNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	err = svc.AlquranRepo.SaveDetailVerse(ctx, ID, VerseNumber, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

@@ -81,3 +81,27 @@ func (Repo *AlquranRepo) GetVerseAPi(ctx context.Context, ID int) (*[]models.Cha
 
 	return &result, nil
 }
+
+func (Repo *AlquranRepo) GetDetailVerseAPi(ctx context.Context, ID, VerseNumber int) (*models.Verse, error) {
+	response, err := http.Get(Repo.cfg.OTHER.AlQuranAPI + "chapter/" + fmt.Sprint(ID) + "/verse/" + fmt.Sprint(VerseNumber))
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("failed retrieve data, status code not 200")
+	}
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []models.Verse
+	err = json.Unmarshal([]byte(string(responseData)), &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result[0], nil
+}

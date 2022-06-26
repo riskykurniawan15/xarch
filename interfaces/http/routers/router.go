@@ -48,6 +48,7 @@ func Routers(svc *domain.Service, cfg config.Config) *echo.Echo {
 		alquran_group.GET("/chapter", alquran_handler.ListChapter)
 		alquran_group.GET("/chapter/:ID", alquran_handler.DetailChapter)
 		alquran_group.GET("/chapter/:ID/verse", alquran_handler.ListVerse)
+		alquran_group.GET("/chapter/:ID/verse/:verse_number", alquran_handler.DetailVerse)
 	}
 
 	return engine

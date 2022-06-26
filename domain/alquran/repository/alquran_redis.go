@@ -101,3 +101,34 @@ func (Repo *AlquranRepo) SaveChapterVerse(ctx context.Context, ID int, ChapterVe
 
 	return nil
 }
+
+func (Repo *AlquranRepo) GetDetailVerse(ctx context.Context, ID, VerseNumber int) (*models.Verse, error) {
+	res, err := Repo.RDB.Get(ctx, "chapter_"+fmt.Sprint(ID)+"_verse_"+fmt.Sprint(VerseNumber)).Result()
+	if err == redis.Nil {
+		return nil, nil
+	} else if err != nil {
+		panic(err)
+	}
+
+	var result models.Verse
+	err = json.Unmarshal([]byte(string(res)), &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (Repo *AlquranRepo) SaveDetailVerse(ctx context.Context, ID, VerseNumber int, ChapterVerse *models.Verse) error {
+	value, err := json.Marshal(ChapterVerse)
+	if err != nil {
+		return err
+	}
+
+	err = Repo.RDB.Set(ctx, "chapter_"+fmt.Sprint(ID)+"_verse_"+fmt.Sprint(VerseNumber), string(value), 0).Err()
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
+}
