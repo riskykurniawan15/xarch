@@ -35,17 +35,23 @@ func openSQL(cfg config.DBServer) *sql.DB {
 }
 
 func ConnectDB(cfg config.DBServer) *gorm.DB {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Panic(fmt.Sprint(r))
+		}
+	}()
+
 	log.Info("Connection to database")
 
-	db, err := gorm.Open(mysql.New(mysql.Config{
-		Conn: openSQL(cfg),
-	}), &gorm.Config{})
-	if err != nil {
-		log.PanicW("Failed to Connect DB", err)
-		panic("Failed to Connect DB")
+	if cfg.DB_DRIVER == "mysql" {
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			Conn: openSQL(cfg),
+		}), &gorm.Config{})
+		if err != nil {
+			panic("Failed to Connect DB")
+		}
+		return db
+	} else {
+		panic("Failed to Connect DB but driver not exists")
 	}
-
-	log.Info("Database connected")
-
-	return db
 }
