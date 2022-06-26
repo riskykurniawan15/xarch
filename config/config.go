@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/riskykurniawan15/xarch/logger"
@@ -26,11 +27,15 @@ type HttpServer struct {
 }
 
 type DBServer struct {
-	DB_USER   string
-	DB_PASS   string
-	DB_SERVER string
-	DB_PORT   int
-	DB_NAME   string
+	DB_DRIVER        string
+	DB_USER          string
+	DB_PASS          string
+	DB_SERVER        string
+	DB_PORT          int
+	DB_NAME          string
+	DB_MAX_IDLE_CON  int
+	DB_MAX_OPEN_CON  int
+	DB_MAX_LIFE_TIME int
 }
 
 type RDBServer struct {
@@ -82,6 +87,7 @@ func Configuration() Config {
 		panic("PORT must be number")
 	}
 
+	cfg.DB.DB_DRIVER = strings.ToLower(os.Getenv("DB_DRIVER"))
 	cfg.DB.DB_USER = os.Getenv("DB_USER")
 	cfg.DB.DB_PASS = os.Getenv("DB_PASS")
 	cfg.DB.DB_SERVER = os.Getenv("DB_SERVER")
@@ -91,6 +97,21 @@ func Configuration() Config {
 		panic("DB_PORT must be number")
 	}
 	cfg.DB.DB_NAME = os.Getenv("DB_NAME")
+	cfg.DB.DB_MAX_IDLE_CON, err = strconv.Atoi(os.Getenv("DB_MAX_IDLE_CON"))
+	if err != nil {
+		log.PanicW("DB_MAX_IDLE_CON must be number", err)
+		panic("DB_MAX_IDLE_CON must be number")
+	}
+	cfg.DB.DB_MAX_OPEN_CON, err = strconv.Atoi(os.Getenv("DB_MAX_OPEN_CON"))
+	if err != nil {
+		log.PanicW("DB_MAX_OPEN_CON must be number", err)
+		panic("DB_MAX_OPEN_CON must be number")
+	}
+	cfg.DB.DB_MAX_LIFE_TIME, err = strconv.Atoi(os.Getenv("DB_MAX_LIFE_TIME"))
+	if err != nil {
+		log.PanicW("DB_MAX_LIFE_TIME must be number", err)
+		panic("DB_MAX_LIFE_TIME must be number")
+	}
 
 	cfg.RDB.RDB_ADDRESS = os.Getenv("RDB_ADDRESS")
 	cfg.RDB.RDB_PORT, err = strconv.Atoi(os.Getenv("RDB_PORT"))

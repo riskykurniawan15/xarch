@@ -23,13 +23,13 @@ func openSQL(cfg config.DBServer) *sql.DB {
 		cfg.DB_NAME,
 	)
 
-	sqlDB, _ := sql.Open("mysql", dsn)
+	sqlDB, _ := sql.Open(cfg.DB_DRIVER, dsn)
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxIdleConns(cfg.DB_MAX_IDLE_CON)
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxOpenConns(cfg.DB_MAX_OPEN_CON)
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	sqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDB.SetConnMaxLifetime(time.Minute * time.Duration(cfg.DB_MAX_LIFE_TIME))
 
 	return sqlDB
 }
