@@ -14,7 +14,7 @@ func (Repo *AlquranRepo) GetChapter(ctx context.Context) (*[]models.Chapter, err
 	if err == redis.Nil {
 		return nil, nil
 	} else if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var result []models.Chapter
@@ -34,7 +34,7 @@ func (Repo *AlquranRepo) SaveChapter(ctx context.Context, Chapter *[]models.Chap
 
 	err = Repo.RDB.Set(ctx, "chapter", string(value), 0).Err()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	return nil
@@ -45,7 +45,7 @@ func (Repo *AlquranRepo) GetDetailChapter(ctx context.Context, ID int) (*models.
 	if err == redis.Nil {
 		return nil, nil
 	} else if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var result models.Chapter
@@ -65,7 +65,7 @@ func (Repo *AlquranRepo) SaveDetailChapter(ctx context.Context, ID int, Chapter 
 
 	err = Repo.RDB.Set(ctx, "chapter_"+fmt.Sprint(ID), string(value), 0).Err()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	return nil
@@ -76,7 +76,7 @@ func (Repo *AlquranRepo) GetChapterVerse(ctx context.Context, ID int) (*[]models
 	if err == redis.Nil {
 		return nil, nil
 	} else if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var result []models.ChapterVerse
@@ -96,7 +96,7 @@ func (Repo *AlquranRepo) SaveChapterVerse(ctx context.Context, ID int, ChapterVe
 
 	err = Repo.RDB.Set(ctx, "chapter_"+fmt.Sprint(ID)+"_verse", string(value), 0).Err()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	return nil
@@ -107,7 +107,7 @@ func (Repo *AlquranRepo) GetDetailVerse(ctx context.Context, ID, VerseNumber int
 	if err == redis.Nil {
 		return nil, nil
 	} else if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var result models.Verse
@@ -127,7 +127,7 @@ func (Repo *AlquranRepo) SaveDetailVerse(ctx context.Context, ID, VerseNumber in
 
 	err = Repo.RDB.Set(ctx, "chapter_"+fmt.Sprint(ID)+"_verse_"+fmt.Sprint(VerseNumber), string(value), 0).Err()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	return nil
