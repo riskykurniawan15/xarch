@@ -1,9 +1,10 @@
 package driver
 
 import (
+	"database/sql"
 	"fmt"
+	"time"
 
-	"github.com/go-redis/redis/v8"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
@@ -13,8 +14,7 @@ import (
 
 var log logger.Logger = logger.NewLogger()
 
-func ConnectDB(cfg config.DBServer) *gorm.DB {
-	log.Info("Connection to database")
+func openSQL(cfg config.DBServer) *sql.DB {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.DB_USER,
 		cfg.DB_PASS,
@@ -23,7 +23,23 @@ func ConnectDB(cfg config.DBServer) *gorm.DB {
 		cfg.DB_NAME,
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	sqlDB, _ := sql.Open("mysql", dsn)
+	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
+	sqlDB.SetMaxIdleConns(10)
+	// SetMaxOpenConns sets the maximum number of open connections to the database.
+	sqlDB.SetMaxOpenConns(100)
+	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	return sqlDB
+}
+
+func ConnectDB(cfg config.DBServer) *gorm.DB {
+	log.Info("Connection to database")
+
+	db, err := gorm.Open(mysql.New(mysql.Config{
+		Conn: openSQL(cfg),
+	}), &gorm.Config{})
 	if err != nil {
 		log.PanicW("Failed to Connect DB", err)
 		panic("Failed to Connect DB")
@@ -32,18 +48,4 @@ func ConnectDB(cfg config.DBServer) *gorm.DB {
 	log.Info("Database connected")
 
 	return db
-}
-
-func ConnectRedis(cfg config.RDBServer) *redis.Client {
-	log.Info("Connection to redis")
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", cfg.RDB_ADDRESS, cfg.RDB_PORT),
-		Username: cfg.RDB_USER,
-		Password: cfg.RDB_PASS,
-		DB:       cfg.RDB_DB_DEFAULT,
-	})
-
-	log.Info("Redis connected")
-
-	return rdb
 }
