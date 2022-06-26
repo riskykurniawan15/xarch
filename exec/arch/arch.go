@@ -87,7 +87,6 @@ func EngineSwitch() {
 		DB, RDB := StartDriver()
 		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting Consumer Engine")
-		wg.Add(1)
 		consumer.ConsumerRun(cfg, log, svc)
 	case "*":
 		DB, RDB := StartDriver()
