@@ -35,6 +35,7 @@ func Routers(svc *domain.Service, cfg config.Config) *echo.Echo {
 	engine := echo.New()
 	engine.POST("/register", user_handler.Register)
 	engine.POST("/login", user_handler.Login)
+	engine.POST("/forgot", user_handler.ForgotPass)
 
 	engine.POST("/user/verif/resend", user_handler.ReSendVerification)
 	engine.GET("/user/verif/:id/:token", user_handler.Verification)

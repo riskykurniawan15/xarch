@@ -145,6 +145,20 @@ func (svc UserService) UpdatePasswordUser(ctx context.Context, ID uint, old_pass
 	return "success update password", nil
 }
 
+func (svc UserService) ForgotPassword(ctx context.Context, email string) (string, error) {
+	user, err := svc.UserRepo.SelectUserDetailByEmail(ctx, &models.User{Email: email})
+	if err != nil {
+		return "user not found", nil
+	}
+
+	err = svc.UserRepo.ForgotPassByEmailPublish(ctx, user)
+	if err != nil {
+		return "failed send email", err
+	}
+
+	return "success send token reset password by email", nil
+}
+
 func (svc UserService) ReSendEmailVerification(ctx context.Context, email string) (string, error) {
 	user, err := svc.UserRepo.SelectUserDetailByEmail(ctx, &models.User{Email: email})
 	if err != nil {

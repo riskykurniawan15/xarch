@@ -26,5 +26,5 @@ func ConsumerRun(cfg config.Config, log logger.Logger, svc *domain.Service) {
 	en := engine.NewKafkaEngine(cfg, log)
 
 	// to consume message
-	en.Consume(cfg.KAFKA.TOPIC_EMAIL_SENDER, email_sender.SendVerification)
+	en.Consume(cfg.KAFKA.TOPIC_EMAIL_VERIFIED, email_sender.SendVerification)
 }

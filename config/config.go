@@ -60,7 +60,8 @@ type KafkaConfig struct {
 	KAFKA_SERVER         string
 	KAFKA_PORT           int
 	KAFKA_CONSUMER_GROUP string
-	TOPIC_EMAIL_SENDER   string
+	TOPIC_EMAIL_VERIFIED string
+	TOPIC_PASS_FORGOT    string
 }
 
 type JWTConfig struct {
@@ -156,7 +157,8 @@ func Configuration() Config {
 		panic("KAFKA_PORT must be number")
 	}
 	cfg.KAFKA.KAFKA_CONSUMER_GROUP = os.Getenv("KAFKA_CONSUMER_GROUP")
-	cfg.KAFKA.TOPIC_EMAIL_SENDER = os.Getenv("TOPIC_EMAIL_SENDER")
+	cfg.KAFKA.TOPIC_EMAIL_VERIFIED = os.Getenv("TOPIC_EMAIL_VERIFIED")
+	cfg.KAFKA.TOPIC_PASS_FORGOT = os.Getenv("TOPIC_PASS_FORGOT")
 
 	cfg.OTHER.AlQuranAPI = os.Getenv("ALQURAN_API")
 

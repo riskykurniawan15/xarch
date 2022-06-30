@@ -133,6 +133,37 @@ func (handler UserHandler) Login(ctx echo.Context) error {
 	}))
 }
 
+type ForgotPassForm struct {
+	Email string `form:"email"    validate:"required,max=100,email"            json:"email"`
+}
+
+func (handler UserHandler) ForgotPass(ctx echo.Context) error {
+	form := new(ForgotPassForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err := validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.ForgotPassword(ctx.Request().Context(), form.Email)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
 type UserUpdateProfileForm struct {
 	Name   string `form:"name"     validate:"required,max=100"                  json:"name"`
 	Email  string `form:"email"    validate:"required,max=100,email" json:"email"`
