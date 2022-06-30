@@ -118,3 +118,39 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 	}
 	return nil, nil
 }
+
+func (svc UserService) EmailVerification(ctx context.Context, ID uint, token string) (string, error) {
+
+	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return "", fmt.Errorf("user not found")
+	}
+
+	tokenList, err := svc.UserRepo.GetTokenEmailVerfied(ctx, ID)
+	if err != nil {
+		return "", err
+	}
+
+	exist := false
+	today := time.Now()
+	for _, val := range *tokenList {
+		if bcrypt.CompareHash(val.Token, token) == nil {
+			if today.Before(val.Expired) {
+				exist = true
+				break
+			}
+		}
+	}
+
+	if !exist {
+		return "verifikasi gagal token tidak ditemukan atau sudah expired", nil
+	}
+
+	userData.VerifiedAt = today
+	_, err = svc.UserRepo.UpdateUser(ctx, ID, userData)
+	if err != nil {
+		return "", fmt.Errorf("user not found")
+	}
+
+	return "varifikasi success", nil
+}

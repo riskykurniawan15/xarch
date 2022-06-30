@@ -34,6 +34,18 @@ func (repo UserRepo) InsertUser(ctx context.Context, user *models.User) (*models
 	return user, nil
 }
 
+func (repo UserRepo) UpdateUser(ctx context.Context, ID uint, user *models.User) (*models.User, error) {
+	if err := repo.DB.
+		WithContext(ctx).
+		Updates(user).
+		Where("id = ?", ID).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (repo UserRepo) SelectUserDetailByEmail(ctx context.Context, user *models.User) (*models.User, error) {
 	var model *models.User
 
@@ -64,15 +76,4 @@ func (repo UserRepo) SelectUserDetail(ctx context.Context, user *models.User) (*
 	}
 
 	return model, nil
-}
-
-func (repo UserRepo) InsertTokenEmailVerfied(ctx context.Context, token *models.UserToken) (*models.UserToken, error) {
-	if err := repo.DB.
-		WithContext(ctx).
-		Create(token).
-		Error; err != nil {
-		return nil, err
-	}
-
-	return token, nil
 }

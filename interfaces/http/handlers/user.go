@@ -122,8 +122,22 @@ func (handler UserHandler) GetProfile(ctx echo.Context) error {
 }
 
 func (handler UserHandler) Verification(ctx echo.Context) error {
+	ID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
 	token := ctx.Param("token")
+
+	data, err := handler.UserService.EmailVerification(ctx.Request().Context(), uint(ID), token)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
 	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
-		"data": token,
+		"data": data,
 	}))
 }
