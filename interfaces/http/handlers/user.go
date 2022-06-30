@@ -64,6 +64,37 @@ func (handler UserHandler) Register(ctx echo.Context) error {
 	}))
 }
 
+type ReSendVerificationForm struct {
+	Email string `form:"email"    validate:"required,max=100,email"            json:"email"`
+}
+
+func (handler UserHandler) ReSendVerification(ctx echo.Context) error {
+	form := new(ReSendVerificationForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err := validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.ReSendEmailVerification(ctx.Request().Context(), form.Email)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
 type UserLoginForm struct {
 	Email    string `form:"email"    validate:"required,max=100,email" json:"email"`
 	Password string `form:"password" validate:"required,max=100"       json:"-"`

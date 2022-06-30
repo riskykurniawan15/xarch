@@ -98,6 +98,24 @@ func (svc UserService) UpdateProfileUser(ctx context.Context, ID uint, user *mod
 	return userData, nil
 }
 
+func (svc UserService) ReSendEmailVerification(ctx context.Context, email string) (string, error) {
+	user, err := svc.UserRepo.SelectUserDetailByEmail(ctx, &models.User{Email: email})
+	if err != nil {
+		return "user not found", nil
+	}
+
+	if fmt.Sprint(user.VerifiedAt) != fmt.Sprint(time.Time{}) {
+		return "failed send verification email, your account has been verified", err
+	}
+
+	err = svc.UserRepo.VerifiedEmailPublish(ctx, user)
+	if err != nil {
+		return "failed send verification email", err
+	}
+
+	return "success send verification email", nil
+}
+
 func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, error) {
 	exp := time.Now().Add(time.Minute * 10)
 
