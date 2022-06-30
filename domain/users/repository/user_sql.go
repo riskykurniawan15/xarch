@@ -37,8 +37,9 @@ func (repo UserRepo) InsertUser(ctx context.Context, user *models.User) (*models
 func (repo UserRepo) UpdateUser(ctx context.Context, ID uint, user *models.User) (*models.User, error) {
 	if err := repo.DB.
 		WithContext(ctx).
-		Updates(user).
+		Model(&models.User{}).
 		Where("id = ?", ID).
+		Updates(user).
 		Error; err != nil {
 		return nil, err
 	}

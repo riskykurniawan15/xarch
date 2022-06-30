@@ -81,6 +81,23 @@ func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*m
 	return user, nil
 }
 
+func (svc UserService) UpdateProfileUser(ctx context.Context, ID uint, user *models.User) (*models.User, error) {
+	_, err := svc.UserRepo.UpdateUser(ctx, ID, &models.User{
+		Name:   user.Name,
+		Gender: user.Gender,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to update data")
+	}
+
+	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	return userData, nil
+}
+
 func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, error) {
 	exp := time.Now().Add(time.Minute * 10)
 
@@ -120,7 +137,6 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 }
 
 func (svc UserService) EmailVerification(ctx context.Context, ID uint, token string) (string, error) {
-
 	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
 	if err != nil {
 		return "", fmt.Errorf("user not found")

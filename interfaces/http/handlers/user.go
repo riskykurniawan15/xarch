@@ -101,6 +101,50 @@ func (handler UserHandler) Login(ctx echo.Context) error {
 	}))
 }
 
+type UserUpdateProfileForm struct {
+	Name   string `form:"name"     validate:"required,max=100"                  json:"name"`
+	Gender string `form:"gender"   validate:"required,oneof=male female"        json:"gender"`
+}
+
+func (handler UserHandler) UpdateProfile(ctx echo.Context) error {
+	ID, err := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	form := new(UserUpdateProfileForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err = validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	pyld := models.User{
+		Name:   form.Name,
+		Gender: form.Gender,
+	}
+
+	data, err := handler.UserService.UpdateProfileUser(ctx.Request().Context(), uint(ID), &pyld)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
 func (handler UserHandler) GetProfile(ctx echo.Context) error {
 	ID, err := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
 	if err != nil {

@@ -41,6 +41,7 @@ func Routers(svc *domain.Service, cfg config.Config) *echo.Echo {
 	{
 		user_group.Use(middleware.UserMiddleware)
 		user_group.GET("/profile", user_handler.GetProfile)
+		user_group.PUT("/profile", user_handler.UpdateProfile)
 	}
 
 	alquran_group := engine.Group("/alquran")
