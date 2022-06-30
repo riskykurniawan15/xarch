@@ -9,6 +9,7 @@ import (
 	"github.com/riskykurniawan15/xarch/domain/users/models"
 	"github.com/riskykurniawan15/xarch/domain/users/repository"
 	"github.com/riskykurniawan15/xarch/helpers/bcrypt"
+	"github.com/riskykurniawan15/xarch/helpers/md5"
 )
 
 type UserService struct {
@@ -83,7 +84,16 @@ func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*m
 func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, error) {
 	exp := time.Now().Add(time.Minute * 10)
 
-	TokenHash, err := bcrypt.Hash(exp.Format("2006-01-02 15:04:05"))
+	userData, err := svc.UserRepo.SelectUserDetail(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	user.Name = userData.Name
+
+	enc := md5.Encrypt(exp.Format("2006-01-02 15:04:05"))
+
+	TokenHash, err := bcrypt.Hash(enc)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +109,8 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 	if err != nil {
 		return nil, err
 	}
+
+	token.Token = enc
 
 	err = svc.UserRepo.EmailVerfiedSender(ctx, user, token)
 	if err != nil {

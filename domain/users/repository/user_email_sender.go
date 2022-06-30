@@ -9,9 +9,8 @@ import (
 )
 
 func (repo UserRepo) EmailVerfiedSender(ctx context.Context, user *models.User, token *models.UserToken) error {
-	link := fmt.Sprintf("%s:%d/user/verif/%s",
-		repo.cfg.Http.Server,
-		repo.cfg.Http.Port,
+	link := fmt.Sprintf("%suser/verif/%s",
+		repo.cfg.Http.URL,
 		token.Token,
 	)
 
