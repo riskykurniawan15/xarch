@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -134,6 +135,7 @@ func (handler UserHandler) Login(ctx echo.Context) error {
 
 type UserUpdateProfileForm struct {
 	Name   string `form:"name"     validate:"required,max=100"                  json:"name"`
+	Email  string `form:"email"    validate:"required,max=100,email" json:"email"`
 	Gender string `form:"gender"   validate:"required,oneof=male female"        json:"gender"`
 }
 
@@ -162,12 +164,53 @@ func (handler UserHandler) UpdateProfile(ctx echo.Context) error {
 	pyld := models.User{
 		Name:   form.Name,
 		Gender: form.Gender,
+		Email:  strings.ToLower(form.Email),
 	}
 
 	data, err := handler.UserService.UpdateProfileUser(ctx.Request().Context(), uint(ID), &pyld)
 	if err != nil {
 		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
 			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
+type UpdatePasswordForm struct {
+	OldPassword string `form:"password_old" validate:"required,max=100"                  json:"-"`
+	Password    string `form:"password"     validate:"required,max=100"                  json:"-"`
+	Confirm     string `form:"confirm"      validate:"required,max=100,eqfield=Password" json:"-"`
+}
+
+func (handler UserHandler) UpdatePassword(ctx echo.Context) error {
+	ID, err := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	form := new(UpdatePasswordForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err = validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.UpdatePasswordUser(ctx.Request().Context(), uint(ID), form.OldPassword, form.Password)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err,
 		}))
 	}
 

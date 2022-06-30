@@ -82,20 +82,62 @@ func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*m
 }
 
 func (svc UserService) UpdateProfileUser(ctx context.Context, ID uint, user *models.User) (*models.User, error) {
-	_, err := svc.UserRepo.UpdateUser(ctx, ID, &models.User{
-		Name:   user.Name,
-		Gender: user.Gender,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to update data")
-	}
-
 	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
 	if err != nil {
 		return nil, fmt.Errorf("user not found")
 	}
 
+	pyld := &models.User{
+		Name:   user.Name,
+		Gender: user.Gender,
+		Email:  user.Email,
+	}
+
+	reset_verif := false
+
+	if userData.Email != strings.ToLower(pyld.Email) {
+		pyld.VerifiedAt = time.Time{}
+		reset_verif = true
+	}
+
+	_, err = svc.UserRepo.UpdateUser(ctx, ID, pyld)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update data")
+	}
+
+	userData, err = svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	if reset_verif {
+		svc.UserRepo.VerifiedEmailPublish(ctx, userData)
+	}
+
 	return userData, nil
+}
+
+func (svc UserService) UpdatePasswordUser(ctx context.Context, ID uint, old_password, new_password string) (string, error) {
+	result, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return "", fmt.Errorf("user not found")
+	}
+
+	err = bcrypt.CompareHash(result.Password, old_password)
+	if err != nil {
+		return "", fmt.Errorf("your password dont match")
+	}
+
+	Password, _ := bcrypt.Hash(new_password)
+
+	_, err = svc.UserRepo.UpdateUser(ctx, ID, &models.User{
+		Password: Password,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to update password")
+	}
+
+	return "success update password", nil
 }
 
 func (svc UserService) ReSendEmailVerification(ctx context.Context, email string) (string, error) {
