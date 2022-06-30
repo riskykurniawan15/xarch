@@ -3,7 +3,7 @@
 `elsa create_env`
 
 ### Flush all log file
-`elsa create_env`
+`elsa flush_log`
 
 ### Create new domain
 `elsa create_domain ${name}`
