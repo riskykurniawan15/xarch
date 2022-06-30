@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -24,6 +25,7 @@ type Config struct {
 type HttpServer struct {
 	Server string
 	Port   int
+	URL    string
 }
 
 type DBServer struct {
@@ -86,6 +88,16 @@ func Configuration() Config {
 		log.PanicW("PORT must be number", err)
 		panic("PORT must be number")
 	}
+	if strings.ToLower(os.Getenv("USING_SECURE")) == "true" {
+		cfg.Http.URL = "https://" + cfg.Http.Server
+	} else {
+		cfg.Http.URL = "http://" + cfg.Http.Server
+	}
+
+	if cfg.Http.Port != 0 {
+		cfg.Http.URL += fmt.Sprintf(":%d", cfg.Http.Port)
+	}
+	cfg.Http.URL += "/"
 
 	cfg.DB.DB_DRIVER = strings.ToLower(os.Getenv("DB_DRIVER"))
 	cfg.DB.DB_USER = os.Getenv("DB_USER")

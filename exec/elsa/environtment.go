@@ -5,7 +5,8 @@ import (
 	"log"
 )
 
-const EnvTemplate string = `#SERVER
+const EnvTemplate string = `#HTTP SERVER
+USING_SECURE=false #true or false
 SERVER=0.0.0.0
 PORT=1999
 
