@@ -90,12 +90,17 @@ func (svc UserService) UpdateProfileUser(ctx context.Context, ID uint, user *mod
 	pyld := &models.User{
 		Name:   user.Name,
 		Gender: user.Gender,
-		Email:  user.Email,
+		Email:  strings.ToLower(user.Email),
 	}
 
 	reset_verif := false
 
-	if userData.Email != strings.ToLower(pyld.Email) {
+	if userData.Email != pyld.Email {
+		_, err = svc.UserRepo.SelectUserDetailByEmail(ctx, pyld)
+		if err == nil {
+			return nil, fmt.Errorf("failed update your profile, email is registered")
+		}
+
 		pyld.VerifiedAt = time.Time{}
 		reset_verif = true
 	}
