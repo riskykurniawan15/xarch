@@ -2,7 +2,11 @@ package models
 
 import "time"
 
-const UserTokenTable = "user_tokens"
+const (
+	UserTokenTable = "user_tokens"
+	MethodVerified = "verified"
+	MethodForgot   = "forgot"
+)
 
 type UserToken struct {
 	ID        uint      `gorm:"column:id;primaryKey;autoIncrement" json:"id"`

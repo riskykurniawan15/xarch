@@ -135,7 +135,7 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 
 	token := &models.UserToken{
 		UserID:  user.ID,
-		Method:  "verified",
+		Method:  models.MethodVerified,
 		Token:   TokenHash,
 		Expired: exp,
 	}
@@ -160,7 +160,15 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 		return "", fmt.Errorf("user not found")
 	}
 
-	tokenList, err := svc.UserRepo.GetTokenEmailVerfied(ctx, ID)
+	if fmt.Sprint(userData.VerifiedAt) != fmt.Sprint(time.Time{}) {
+		return "akun telah terverifikasi", err
+	}
+
+	tokenQuery := &models.UserToken{
+		UserID: ID,
+		Method: models.MethodVerified,
+	}
+	tokenList, err := svc.UserRepo.GetTokenEmailVerfied(ctx, tokenQuery)
 	if err != nil {
 		return "", err
 	}
@@ -185,6 +193,8 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 	if err != nil {
 		return "", fmt.Errorf("user not found")
 	}
+
+	svc.UserRepo.DeleteTokenEmailVerfied(ctx, tokenQuery)
 
 	return "varifikasi success", nil
 }

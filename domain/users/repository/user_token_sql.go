@@ -17,18 +17,30 @@ func (repo UserRepo) InsertTokenEmailVerfied(ctx context.Context, token *models.
 	return token, nil
 }
 
-func (repo UserRepo) GetTokenEmailVerfied(ctx context.Context, ID uint) (*[]models.UserToken, error) {
+func (repo UserRepo) GetTokenEmailVerfied(ctx context.Context, userToken *models.UserToken) (*[]models.UserToken, error) {
 	var model *[]models.UserToken
 
 	result := repo.DB.
 		WithContext(ctx).
 		Model(&models.UserToken{}).
-		Where("user_id = ?", ID).
-		First(&model)
+		Where(userToken).
+		Find(&model)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return model, nil
+}
+
+func (repo UserRepo) DeleteTokenEmailVerfied(ctx context.Context, userToken *models.UserToken) error {
+	if err := repo.DB.
+		WithContext(ctx).
+		Where(userToken).
+		Delete(&models.UserToken{}).
+		Error; err != nil {
+		return err
+	}
+
+	return nil
 }
