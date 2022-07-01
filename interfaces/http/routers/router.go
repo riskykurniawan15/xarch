@@ -6,6 +6,7 @@ import (
 	"github.com/riskykurniawan15/xarch/domain"
 	handlers "github.com/riskykurniawan15/xarch/interfaces/http/handlers"
 	"github.com/riskykurniawan15/xarch/interfaces/http/middleware"
+	"github.com/riskykurniawan15/xarch/logger"
 )
 
 type Handlers struct {
@@ -14,8 +15,8 @@ type Handlers struct {
 	AlquranHandler    *handlers.AlquranHandler
 }
 
-func StartHandlers(svc *domain.Service, cfg config.Config) *Handlers {
-	middleware := middleware.NewMiddlewareHandlers(cfg, svc.UserService)
+func StartHandlers(svc *domain.Service, cfg config.Config, log logger.Logger) *Handlers {
+	middleware := middleware.NewMiddlewareHandlers(svc.UserService, cfg, log)
 	users := handlers.NewUserHandlers(svc.UserService)
 	alquran := handlers.NewAlquranHandlers(svc.AlquranService)
 
@@ -26,13 +27,15 @@ func StartHandlers(svc *domain.Service, cfg config.Config) *Handlers {
 	}
 }
 
-func Routers(svc *domain.Service, cfg config.Config) *echo.Echo {
-	handler := StartHandlers(svc, cfg)
+func Routers(svc *domain.Service, cfg config.Config, log logger.Logger) *echo.Echo {
+	handler := StartHandlers(svc, cfg, log)
 	middleware := handler.MiddlewareHandler
 	user_handler := handler.UserHandler
 	alquran_handler := handler.AlquranHandler
 
 	engine := echo.New()
+	engine.Use(middleware.LoggerMiddleware)
+
 	engine.POST("/register", user_handler.Register)
 	engine.POST("/login", user_handler.Login)
 	engine.POST("/forgot", user_handler.ForgotPass)

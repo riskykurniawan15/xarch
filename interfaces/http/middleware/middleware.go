@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 
@@ -11,17 +12,32 @@ import (
 	"github.com/riskykurniawan15/xarch/domain/users/services"
 	"github.com/riskykurniawan15/xarch/helpers/jwt"
 	"github.com/riskykurniawan15/xarch/interfaces/http/entities"
+	"github.com/riskykurniawan15/xarch/logger"
 )
 
 type MiddlewareHandler struct {
-	cfg         config.Config
 	UserService *services.UserService
+	cfg         config.Config
+	log         logger.Logger
 }
 
-func NewMiddlewareHandlers(cfg config.Config, US *services.UserService) *MiddlewareHandler {
+func NewMiddlewareHandlers(US *services.UserService, cfg config.Config, log logger.Logger) *MiddlewareHandler {
 	return &MiddlewareHandler{
-		cfg,
 		US,
+		cfg,
+		log,
+	}
+}
+
+func (MW MiddlewareHandler) LoggerMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		MW.log.InfoW("incomming request", map[string]interface{}{
+			"at":     time.Now().Format("2006-01-02 15:04:05"),
+			"method": ctx.Request().Method,
+			"ip":     ctx.Request().RemoteAddr,
+			"uri":    ctx.Request().URL.String(),
+		})
+		return next(ctx)
 	}
 }
 
