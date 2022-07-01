@@ -3,6 +3,8 @@ package engine
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
 
 	"github.com/riskykurniawan15/xarch/config"
@@ -28,20 +30,21 @@ func NewKafkaEngine(cfg config.Config, log logger.Logger) *EngineLib {
 	}
 }
 
-func (EL EngineLib) Consume(topic string, handler func(context.Context, string, string) error) {
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		ctx := context.Background()
-		ctx = context.WithValue(ctx, "topic", topic)
-		EL.kfk.Topic = topic
-		r := kafka.NewReader(EL.kfk)
-		EL.log.InfoW("Kafka starting to consume", map[string]string{
-			"topic": topic,
-		})
+func (EL EngineLib) Consume(wg *sync.WaitGroup, topic string, handler func(context.Context, string, string) error) {
+	defer wg.Done()
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	run := true
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "topic", topic)
+	EL.kfk.Topic = topic
+	r := kafka.NewReader(EL.kfk)
+	EL.log.InfoW("Kafka starting to consume", map[string]string{
+		"topic": topic,
+	})
 
-		for {
+	go func() {
+		for run {
 			m, err := r.ReadMessage(ctx)
 			if err != nil {
 				break
@@ -54,10 +57,14 @@ func (EL EngineLib) Consume(topic string, handler func(context.Context, string, 
 			})
 			handler(ctx, string(m.Key), string(m.Value))
 		}
-
-		if err := r.Close(); err != nil {
-			EL.log.FatalW("failed to close reader:", err)
-		}
 	}()
-	wg.Wait()
+	<-quit
+	run = false
+	if err := r.Close(); err != nil {
+		EL.log.FatalW("failed to close reader:", err)
+	} else {
+		EL.log.InfoW("success to close reader:", map[string]string{
+			"topic": topic,
+		})
+	}
 }

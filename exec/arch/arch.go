@@ -71,34 +71,50 @@ func StartDriver() (*gorm.DB, *redis.Client) {
 	return db, rdb
 }
 
+func ShutdownDriver(DB *gorm.DB, RDB *redis.Client) {
+	dbCon, _ := DB.DB()
+	if err := dbCon.Close(); err != nil {
+		log.ErrorW("failed to close database connection", err)
+	} else {
+		log.Info("success to close database connection")
+	}
+
+	if err := RDB.Close(); err != nil {
+		log.ErrorW("failed to close redis connection", err)
+	} else {
+		log.Info("success to close redis connection")
+	}
+}
+
 func EngineSwitch() {
 	var wg sync.WaitGroup
+	DB, RDB := StartDriver()
+	svc := domain.StartService(cfg, DB, RDB)
+
 	log.Info("Running Switch Engine")
 	engine_run := flag.String("engine", "*", "type your egine")
 	flag.Parse()
 
 	switch *engine_run {
 	case "http":
-		DB, RDB := StartDriver()
-		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting Http Engine")
-		echo.Start(cfg, svc)
+		wg.Add(1)
+		go echo.Start(&wg, cfg, log, svc)
 	case "consumer":
-		DB, RDB := StartDriver()
-		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting Consumer Engine")
-		consumer.ConsumerRun(cfg, log, svc)
+		wg.Add(1)
+		go consumer.ConsumerRun(&wg, cfg, log, svc)
 	case "*":
-		DB, RDB := StartDriver()
-		svc := domain.StartService(cfg, DB, RDB)
 		log.Info("Starting All Engine")
-		wg.Add(1)
-		go func() { defer wg.Done(); echo.Start(cfg, svc) }()
-		wg.Add(1)
-		go func() { defer wg.Done(); consumer.ConsumerRun(cfg, log, svc) }()
+		wg.Add(2)
+		go consumer.ConsumerRun(&wg, cfg, log, svc)
+		go echo.Start(&wg, cfg, log, svc)
 	default:
 		log.Error("Failed run engine")
 	}
 
 	wg.Wait()
+
+	ShutdownDriver(DB, RDB)
+	log.Info("application is shutdown")
 }
