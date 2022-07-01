@@ -170,6 +170,7 @@ func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (
 
 	user.Name = userData.Name
 
+	rand.Seed(time.Now().UnixNano())
 	enc := fmt.Sprintf("%05d", rand.Intn(99999))
 
 	TokenHash, err := bcrypt.Hash(enc)
@@ -196,6 +197,47 @@ func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (
 		return nil, err
 	}
 	return nil, nil
+}
+
+func (svc UserService) ResetPass(ctx context.Context, email, token, pass string) (string, error) {
+	userData, err := svc.UserRepo.SelectUserDetailByEmail(ctx, &models.User{Email: email})
+	if err != nil {
+		return "", fmt.Errorf("user not found")
+	}
+
+	tokenQuery := &models.UserToken{
+		UserID: userData.ID,
+		Method: models.MethodForgot,
+	}
+	tokenList, err := svc.UserRepo.GetTokenUser(ctx, tokenQuery)
+	if err != nil {
+		return "", err
+	}
+
+	exist := false
+	today := time.Now()
+	for _, val := range *tokenList {
+		if bcrypt.CompareHash(val.Token, token) == nil {
+			if today.Before(val.Expired) {
+				exist = true
+				break
+			}
+		}
+	}
+
+	if !exist {
+		return "token tidak ditemukan atau sudah expired", nil
+	}
+
+	userData.Password, _ = bcrypt.Hash(pass)
+	_, err = svc.UserRepo.UpdateUser(ctx, userData.ID, userData)
+	if err != nil {
+		return "", fmt.Errorf("user not found")
+	}
+
+	svc.UserRepo.DeleteTokenUser(ctx, tokenQuery)
+
+	return "success update password", nil
 }
 
 func (svc UserService) ReSendEmailVerification(ctx context.Context, email string) (string, error) {

@@ -164,6 +164,40 @@ func (handler UserHandler) ForgotPass(ctx echo.Context) error {
 	}))
 }
 
+type ResetPassForm struct {
+	Token    string `form:"token"        validate:"required,min=5,max=5"              json:"-"`
+	Email    string `form:"email"        validate:"required,max=100,email"            json:"email"`
+	Password string `form:"password"     validate:"required,max=100"                  json:"-"`
+	Confirm  string `form:"confirm"      validate:"required,max=100,eqfield=Password" json:"-"`
+}
+
+func (handler UserHandler) ResetPass(ctx echo.Context) error {
+	form := new(ResetPassForm)
+	if err := ctx.Bind(form); err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err,
+		}))
+	}
+
+	err := validate.Struct(form)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.ResetPass(ctx.Request().Context(), form.Email, form.Token, form.Password)
+	if err != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
 type UserUpdateProfileForm struct {
 	Name   string `form:"name"     validate:"required,max=100"                  json:"name"`
 	Email  string `form:"email"    validate:"required,max=100,email" json:"email"`
