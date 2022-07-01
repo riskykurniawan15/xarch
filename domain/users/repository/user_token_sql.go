@@ -6,7 +6,7 @@ import (
 	"github.com/riskykurniawan15/xarch/domain/users/models"
 )
 
-func (repo UserRepo) InsertTokenEmailVerfied(ctx context.Context, token *models.UserToken) (*models.UserToken, error) {
+func (repo UserRepo) InsertTokenUser(ctx context.Context, token *models.UserToken) (*models.UserToken, error) {
 	if err := repo.DB.
 		WithContext(ctx).
 		Create(token).
@@ -17,7 +17,7 @@ func (repo UserRepo) InsertTokenEmailVerfied(ctx context.Context, token *models.
 	return token, nil
 }
 
-func (repo UserRepo) GetTokenEmailVerfied(ctx context.Context, userToken *models.UserToken) (*[]models.UserToken, error) {
+func (repo UserRepo) GetTokenUser(ctx context.Context, userToken *models.UserToken) (*[]models.UserToken, error) {
 	var model *[]models.UserToken
 
 	result := repo.DB.
@@ -33,7 +33,7 @@ func (repo UserRepo) GetTokenEmailVerfied(ctx context.Context, userToken *models
 	return model, nil
 }
 
-func (repo UserRepo) DeleteTokenEmailVerfied(ctx context.Context, userToken *models.UserToken) error {
+func (repo UserRepo) DeleteTokenUser(ctx context.Context, userToken *models.UserToken) error {
 	if err := repo.DB.
 		WithContext(ctx).
 		Where(userToken).

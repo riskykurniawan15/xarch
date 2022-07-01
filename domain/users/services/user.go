@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -159,6 +160,44 @@ func (svc UserService) ForgotPassword(ctx context.Context, email string) (string
 	return "success send token reset password by email", nil
 }
 
+func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (*models.User, error) {
+	exp := time.Now().Add(time.Minute * 10)
+
+	userData, err := svc.UserRepo.SelectUserDetail(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	user.Name = userData.Name
+
+	enc := fmt.Sprintf("%05d", rand.Intn(99999))
+
+	TokenHash, err := bcrypt.Hash(enc)
+	if err != nil {
+		return nil, err
+	}
+
+	token := &models.UserToken{
+		UserID:  user.ID,
+		Method:  models.MethodForgot,
+		Token:   TokenHash,
+		Expired: exp,
+	}
+
+	_, err = svc.UserRepo.InsertTokenUser(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+
+	token.Token = enc
+
+	err = svc.UserRepo.EmailForgotSender(ctx, user, token)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
 func (svc UserService) ReSendEmailVerification(ctx context.Context, email string) (string, error) {
 	user, err := svc.UserRepo.SelectUserDetailByEmail(ctx, &models.User{Email: email})
 	if err != nil {
@@ -201,7 +240,7 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 		Expired: exp,
 	}
 
-	_, err = svc.UserRepo.InsertTokenEmailVerfied(ctx, token)
+	_, err = svc.UserRepo.InsertTokenUser(ctx, token)
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +268,7 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 		UserID: ID,
 		Method: models.MethodVerified,
 	}
-	tokenList, err := svc.UserRepo.GetTokenEmailVerfied(ctx, tokenQuery)
+	tokenList, err := svc.UserRepo.GetTokenUser(ctx, tokenQuery)
 	if err != nil {
 		return "", err
 	}
@@ -255,7 +294,7 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 		return "", fmt.Errorf("user not found")
 	}
 
-	svc.UserRepo.DeleteTokenEmailVerfied(ctx, tokenQuery)
+	svc.UserRepo.DeleteTokenUser(ctx, tokenQuery)
 
 	return "varifikasi success", nil
 }

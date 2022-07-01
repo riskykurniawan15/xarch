@@ -23,6 +23,27 @@ func NewEmailSenderHandler(log logger.Logger, US *services.UserService) *EmailSe
 	}
 }
 
+func (handler EmailSenderHandler) SendForgotToken(ctx context.Context, keys, value string) error {
+	handler.log.Info(fmt.Sprint(ctx.Value("topic")))
+	key := strings.Split(keys, "_")
+	UserID, err := strconv.Atoi(key[1])
+	if err != nil {
+		return err
+	}
+
+	user := models.User{
+		ID:    uint(UserID),
+		Email: value,
+	}
+
+	_, err = handler.UserService.SendTokenForgot(ctx, &user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (handler EmailSenderHandler) SendVerification(ctx context.Context, keys, value string) error {
 	handler.log.Info(fmt.Sprint(ctx.Value("topic")))
 	key := strings.Split(keys, "_")

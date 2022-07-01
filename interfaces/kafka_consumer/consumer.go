@@ -32,6 +32,6 @@ func ConsumerRun(wg *sync.WaitGroup, cfg config.Config, log logger.Logger, svc *
 	wgc.Add(2)
 	// to consume message
 	go en.Consume(&wgc, cfg.KAFKA.TOPIC_EMAIL_VERIFIED, email_sender.SendVerification)
-	go en.Consume(&wgc, cfg.KAFKA.TOPIC_EMAIL_VERIFIED, email_sender.SendVerification)
+	go en.Consume(&wgc, cfg.KAFKA.TOPIC_PASS_FORGOT, email_sender.SendForgotToken)
 	wgc.Wait()
 }
