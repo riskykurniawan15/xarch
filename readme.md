@@ -1,6 +1,6 @@
 # XARCH
 
-Xarch is a concept backend architecture to implement domain driven design principles and 12 factor app methodology for build a backend application.
+Xarch is a concept backend architecture that applies implement domain driven design principles and 12 factor app methodology for build a backend application.
 ```bash
      ___           ___           ___           ___           ___     
     |\__\         /\  \         /\  \         /\  \         /\__\    
