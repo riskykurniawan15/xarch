@@ -5,6 +5,7 @@ import (
 
 	"github.com/riskykurniawan15/xarch/domain/alquran/models"
 	"github.com/riskykurniawan15/xarch/domain/alquran/repository"
+	"github.com/riskykurniawan15/xarch/helpers/errors"
 )
 
 type AlquranService struct {
@@ -17,25 +18,18 @@ func NewAlquranService(Repo *repository.AlquranRepo) *AlquranService {
 	}
 }
 
-func (svc *AlquranService) GetListChapter(ctx context.Context) (*[]models.Chapter, error) {
+func (svc *AlquranService) GetListChapter(ctx context.Context) (*[]models.Chapter, *errors.ErrorResponse) {
 	data, err := svc.AlquranRepo.GetChapter(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	if data != nil {
 		return data, nil
 	}
 
 	data, err = svc.AlquranRepo.GetChapterAPi(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 
-	err = svc.AlquranRepo.SaveChapter(ctx, data)
-	if err != nil {
-		return nil, err
-	}
+	svc.AlquranRepo.SaveChapter(ctx, data)
 
 	return data, nil
 }

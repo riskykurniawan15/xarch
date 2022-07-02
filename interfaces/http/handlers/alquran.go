@@ -22,8 +22,8 @@ func NewAlquranHandlers(AS *services.AlquranService) *AlquranHandler {
 func (handler AlquranHandler) ListChapter(ctx echo.Context) error {
 	data, err := handler.AlquranService.GetListChapter(ctx.Request().Context())
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err,
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
 		}))
 	}
 
