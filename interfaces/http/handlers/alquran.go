@@ -33,24 +33,17 @@ func (handler AlquranHandler) ListChapter(ctx echo.Context) error {
 }
 
 func (handler AlquranHandler) DetailChapter(ctx echo.Context) error {
-	ID, err := strconv.Atoi(ctx.Param("ID"))
-
-	if err != nil {
+	ID, err_param := strconv.Atoi(ctx.Param("ID"))
+	if err_param != nil {
 		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": err,
-		}))
-	}
-
-	if ID < 1 || ID > 114 {
-		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": "Chapter min 1 and max 114",
+			"error": err_param,
 		}))
 	}
 
 	data, err := handler.AlquranService.GetDetailChapter(ctx.Request().Context(), ID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err,
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
 		}))
 	}
 
@@ -60,24 +53,17 @@ func (handler AlquranHandler) DetailChapter(ctx echo.Context) error {
 }
 
 func (handler AlquranHandler) ListVerse(ctx echo.Context) error {
-	ID, err := strconv.Atoi(ctx.Param("ID"))
-
-	if err != nil {
+	ID, err_param := strconv.Atoi(ctx.Param("ID"))
+	if err_param != nil {
 		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": err,
-		}))
-	}
-
-	if ID < 1 || ID > 114 {
-		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": "Chapter min 1 and max 114",
+			"error": err_param,
 		}))
 	}
 
 	data, err := handler.AlquranService.GetListVerse(ctx.Request().Context(), ID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err.Error(),
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
 		}))
 	}
 
@@ -87,30 +73,24 @@ func (handler AlquranHandler) ListVerse(ctx echo.Context) error {
 }
 
 func (handler AlquranHandler) DetailVerse(ctx echo.Context) error {
-	ID, err := strconv.Atoi(ctx.Param("ID"))
-	if err != nil {
+	ID, err_param := strconv.Atoi(ctx.Param("ID"))
+	if err_param != nil {
 		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": err,
+			"error": err_param,
 		}))
 	}
 
-	if ID < 1 || ID > 114 {
+	VerseNumber, err_param := strconv.Atoi(ctx.Param("verse_number"))
+	if err_param != nil {
 		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": "Chapter min 1 and max 114",
-		}))
-	}
-
-	VerseNumber, err := strconv.Atoi(ctx.Param("verse_number"))
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, entities.ResponseFormater(http.StatusBadRequest, map[string]interface{}{
-			"error": err,
+			"error": err_param,
 		}))
 	}
 
 	data, err := handler.AlquranService.GetDetailVerse(ctx.Request().Context(), ID, VerseNumber)
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err.Error(),
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
 		}))
 	}
 
