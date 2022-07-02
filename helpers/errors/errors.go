@@ -1,16 +1,19 @@
 package errors
 
+import "net/http"
+
 type ErrorResponse struct {
 	HttpCode int
 	Errors   error
 }
 
 var (
-	NotFound      *ErrorResponse = InitError(404)
-	InternalError *ErrorResponse = InitError(500)
+	BadRequest    *ErrorResponse = initError(http.StatusBadRequest)
+	NotFound      *ErrorResponse = initError(http.StatusNotFound)
+	InternalError *ErrorResponse = initError(http.StatusInternalServerError)
 )
 
-func InitError(httpCode int) *ErrorResponse {
+func initError(httpCode int) *ErrorResponse {
 	return &ErrorResponse{HttpCode: httpCode}
 }
 
