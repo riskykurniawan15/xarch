@@ -94,10 +94,10 @@ func (svc UserService) LoginUser(ctx context.Context, req *models.UserLoginForm)
 	return result, nil
 }
 
-func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*models.User, error) {
+func (svc UserService) GetDetailUser(ctx context.Context, user *models.User) (*models.User, *errors.ErrorResponse) {
 	user, err := svc.UserRepo.SelectUserDetail(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, errors.InternalError.NewError(fmt.Errorf("user not found"))
 	}
 
 	return user, nil
@@ -196,12 +196,12 @@ func (svc UserService) ForgotPassword(ctx context.Context, req *models.ForgotPas
 	return "success send token reset password by email", nil
 }
 
-func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (*models.User, error) {
+func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (*models.User, *errors.ErrorResponse) {
 	exp := time.Now().Add(time.Minute * 10)
 
 	userData, err := svc.UserRepo.SelectUserDetail(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, errors.BadRequest.NewError(fmt.Errorf("user not found"))
 	}
 
 	user.Name = userData.Name
@@ -211,7 +211,7 @@ func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (
 
 	TokenHash, err := bcrypt.Hash(enc)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 
 	token := &models.UserToken{
@@ -223,14 +223,14 @@ func (svc UserService) SendTokenForgot(ctx context.Context, user *models.User) (
 
 	_, err = svc.UserRepo.InsertTokenUser(ctx, token)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 
 	token.Token = enc
 
 	err = svc.UserRepo.EmailForgotSender(ctx, user, token)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 	return nil, nil
 }
@@ -304,12 +304,12 @@ func (svc UserService) ReSendEmailVerification(ctx context.Context, req *models.
 	return "success send verification email", nil
 }
 
-func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, error) {
+func (svc UserService) SendEmailVerification(ctx context.Context, user *models.User) (*models.User, *errors.ErrorResponse) {
 	exp := time.Now().Add(time.Minute * 10)
 
 	userData, err := svc.UserRepo.SelectUserDetail(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, errors.BadRequest.NewError(fmt.Errorf("user not found"))
 	}
 
 	user.Name = userData.Name
@@ -318,7 +318,7 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 
 	TokenHash, err := bcrypt.Hash(enc)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 
 	token := &models.UserToken{
@@ -330,26 +330,26 @@ func (svc UserService) SendEmailVerification(ctx context.Context, user *models.U
 
 	_, err = svc.UserRepo.InsertTokenUser(ctx, token)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 
 	token.Token = enc
 
 	err = svc.UserRepo.EmailVerfiedSender(ctx, user, token)
 	if err != nil {
-		return nil, err
+		return nil, errors.InternalError.NewError(err)
 	}
 	return nil, nil
 }
 
-func (svc UserService) EmailVerification(ctx context.Context, ID uint, token string) (string, error) {
+func (svc UserService) EmailVerification(ctx context.Context, ID uint, token string) (string, *errors.ErrorResponse) {
 	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
 	if err != nil {
-		return "", fmt.Errorf("user not found")
+		return "", errors.BadRequest.NewError(fmt.Errorf("user not found"))
 	}
 
 	if fmt.Sprint(userData.VerifiedAt) != fmt.Sprint(time.Time{}) {
-		return "akun telah terverifikasi", err
+		return "", errors.BadRequest.NewError(fmt.Errorf("akun telah terverifikasi"))
 	}
 
 	tokenQuery := &models.UserToken{
@@ -358,7 +358,7 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 	}
 	tokenList, err := svc.UserRepo.GetTokenUser(ctx, tokenQuery)
 	if err != nil {
-		return "", err
+		return "", errors.InternalError.NewError(err)
 	}
 
 	exist := false
@@ -373,13 +373,13 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 	}
 
 	if !exist {
-		return "verifikasi gagal token tidak ditemukan atau sudah expired", nil
+		return "", errors.BadRequest.NewError(fmt.Errorf("verifikasi gagal token tidak ditemukan atau sudah expired"))
 	}
 
 	userData.VerifiedAt = today
 	_, err = svc.UserRepo.UpdateUser(ctx, ID, userData)
 	if err != nil {
-		return "", fmt.Errorf("user not found")
+		return "", errors.InternalError.NewError(fmt.Errorf("failed update user"))
 	}
 
 	svc.UserRepo.DeleteTokenUser(ctx, tokenQuery)

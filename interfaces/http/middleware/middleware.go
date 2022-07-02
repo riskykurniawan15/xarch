@@ -65,10 +65,10 @@ func (MW MiddlewareHandler) UserMiddleware(next echo.HandlerFunc) echo.HandlerFu
 			}))
 		}
 
-		user, err := MW.UserService.GetDetailUser(ctx.Request().Context(), &models.User{ID: claims.ID})
-		if err != nil {
+		user, err_get := MW.UserService.GetDetailUser(ctx.Request().Context(), &models.User{ID: claims.ID})
+		if err_get != nil {
 			return ctx.JSON(http.StatusUnauthorized, entities.ResponseFormater(http.StatusUnauthorized, map[string]interface{}{
-				"error": err.Error(),
+				"error": err_get.Errors.Error(),
 			}))
 		}
 

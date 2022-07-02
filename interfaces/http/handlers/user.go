@@ -177,17 +177,17 @@ func (handler UserHandler) UpdatePassword(ctx echo.Context) error {
 }
 
 func (handler UserHandler) GetProfile(ctx echo.Context) error {
-	ID, err := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
-	if err != nil {
+	ID, err_id := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
+	if err_id != nil {
 		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err.Error(),
+			"error": err_id.Error(),
 		}))
 	}
 
 	data, err := handler.UserService.GetDetailUser(ctx.Request().Context(), &models.User{ID: uint(ID)})
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err.Error(),
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
 		}))
 	}
 
@@ -197,18 +197,18 @@ func (handler UserHandler) GetProfile(ctx echo.Context) error {
 }
 
 func (handler UserHandler) Verification(ctx echo.Context) error {
-	ID, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
+	ID, err_id := strconv.Atoi(ctx.Param("id"))
+	if err_id != nil {
 		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err.Error(),
+			"error": err_id.Error(),
 		}))
 	}
 	token := ctx.Param("token")
 
 	data, err := handler.UserService.EmailVerification(ctx.Request().Context(), uint(ID), token)
 	if err != nil {
-		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
-			"error": err.Error(),
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
 		}))
 	}
 
