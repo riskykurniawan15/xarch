@@ -100,7 +100,7 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 │   │   └───routers         # Routing http server
 │   └───kafka_consumer      # Consumer Engine
 │       ├───engine          # Define a engine script for running a consumer interfaces
-│       └───handlers        # All handler in consumer interfaces
+│       ├───handlers        # All handler in consumer interfaces
 │       └───consumer.go     # Routing and defined all job in consumer interfaces
 ├───logger                  # Contains a logger program and dir to save all log file
 ├───migration               # Migration layers can acessed with elsa program
