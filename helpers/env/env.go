@@ -26,7 +26,7 @@ func GetInt(val string) int {
 func GetFloat(val string) float64 {
 	result, err := strconv.ParseFloat((os.Getenv(val)), 32)
 	if err != nil {
-		return 0
+		return 0.0
 	}
 	return result
 }
