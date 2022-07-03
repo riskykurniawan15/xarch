@@ -23,6 +23,14 @@ func GetInt(val string) int {
 	return result
 }
 
+func GetFloat(val string) float64 {
+	result, err := strconv.ParseFloat((os.Getenv(val)), 32)
+	if err != nil {
+		return 0
+	}
+	return result
+}
+
 func GetBoolean(val string) bool {
 	result, err := strconv.ParseBool(os.Getenv(val))
 	if err != nil {
