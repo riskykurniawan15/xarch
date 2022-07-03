@@ -86,7 +86,7 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 │   └───elsa                # Elsa Application (tools)
 ├───helpers                 # Dir to contains all helpering program
 │   ├───bcrypt              # Hash and compare bcrypt
-│   ├───env                 # Helper a env to many format
+│   ├───env                 # Program to get environtment to specifics format data type
 │   ├───errors              # Defined a error code to communicated domain and interfaces
 │   ├───jwt                 # Jwt token helper
 │   ├───mail                # Mail sender helper
