@@ -11,17 +11,20 @@ import (
 
 type Handlers struct {
 	MiddlewareHandler *middleware.MiddlewareHandler
+	HealthHandler     *handlers.HealthHandler
 	UserHandler       *handlers.UserHandler
 	AlquranHandler    *handlers.AlquranHandler
 }
 
 func StartHandlers(svc *domain.Service, cfg config.Config, log logger.Logger) *Handlers {
 	middleware := middleware.NewMiddlewareHandlers(svc.UserService, cfg, log)
+	health := handlers.NewHealthHandlers(svc.HealthService)
 	users := handlers.NewUserHandlers(svc.UserService)
 	alquran := handlers.NewAlquranHandlers(svc.AlquranService)
 
 	return &Handlers{
 		middleware,
+		health,
 		users,
 		alquran,
 	}
@@ -30,11 +33,14 @@ func StartHandlers(svc *domain.Service, cfg config.Config, log logger.Logger) *H
 func Routers(svc *domain.Service, cfg config.Config, log logger.Logger) *echo.Echo {
 	handler := StartHandlers(svc, cfg, log)
 	middleware := handler.MiddlewareHandler
+	health_handler := handler.HealthHandler
 	user_handler := handler.UserHandler
 	alquran_handler := handler.AlquranHandler
 
 	engine := echo.New()
 	engine.Use(middleware.LoggerMiddleware)
+
+	engine.GET("/health", health_handler.Metric)
 
 	engine.POST("/register", user_handler.Register)
 	engine.POST("/login", user_handler.Login)
