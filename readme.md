@@ -70,6 +70,45 @@ go run main.go elsa run_migration_seeder
 go run main.go elsa run_migration_seeder ${seeder_name}
 ```
 
+## Folder Structure
+```tree
+.
+├───config                  # All configuration in application
+├───domain                  # Domain Layers is containing a models, repository and services
+│   ├───domain_name         # Name of domain 
+│   │   ├───models          # Contains many file for modeling data
+│   │   ├───repository      # All file to comunicated all backing services
+│   │   └───services        # Services file to processing a bussiness application
+│   └───domain.go           # For publishing a domain and inject all dependencies to domain
+├───driver                  # Dir to defined and registered all driver (backing services)
+├───exec                    # Application layer contains all program in architecture
+│   ├───arch                # Arch Application (services)
+│   └───elsa                # Elsa Application (tools)
+├───helpers                 # Dir to contains all helpering program
+│   ├───bcrypt              # Hash and compare bcrypt
+│   ├───env                 # Helper a env to many format
+│   ├───errors              # Defined a error code to communicated domain and interfaces
+│   ├───jwt                 # Jwt token helper
+│   ├───mail                # Mail sender helper
+│   └───md5                 # Conferted plain text to MD5
+├───interfaces              # Interfaces Layer contains all engine method for user access a application
+│   ├───http                # Http Engine
+│   │   ├───engine          # Define a engine script for running a http server interfaces
+│   │   ├───entities        # Define to entities models contains a response formater
+│   │   ├───handlers        # All handler in http interfaces
+│   │   ├───middleware      # All handler middleware in http interfaces
+│   │   └───routers         # Routing http server
+│   └───kafka_consumer      # Consumer Engine
+│       ├───engine          # Define a engine script for running a consumer interfaces
+│       └───handlers        # All handler in consumer interfaces
+│       └───consumer.go     # Routing and defined all job in consumer interfaces
+├───logger                  # Contains a logger program and dir to save all log file
+├───migration               # Migration layers can acessed with elsa program
+│   ├───schema              # Containing script schema in sql format
+│   ├───seeder              # Containing script seeder in sql format
+│   └───migrate.go          # For registered schema and seeder
+└───main.go                 # Main Application
+````
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
