@@ -90,7 +90,7 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 │   ├───errors              # Defined a error code to communicated domain and interfaces
 │   ├───jwt                 # Jwt token helper
 │   ├───mail                # Mail sender helper
-│   └───md5                 # Conferted plain text to MD5
+│   └───md5                 # Converted plain text to MD5
 ├───interfaces              # Interfaces Layer contains all engine method for user access a application
 │   ├───http                # Http Engine
 │   │   ├───engine          # Define a engine script for running a http server interfaces
