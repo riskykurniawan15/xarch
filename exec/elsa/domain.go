@@ -8,31 +8,22 @@ import (
 	"strings"
 )
 
-func BuildDomain(domain_name string) error {
+func CreateDomain(domain_name string) error {
 	if domain_name == "" {
-		return fmt.Errorf("Failed to create domain because domain name is null")
+		return fmt.Errorf("failed to create domain because domain name is null")
 	}
 
 	if _, err := os.Stat("domain/" + domain_name); os.IsNotExist(err) {
-		path := "domain/" + domain_name + "/models/"
-		os.MkdirAll(path, 0700)
-		err := ioutil.WriteFile(path+domain_name+".go", []byte("package models"), 0644)
-		if err != nil {
-			os.MkdirAll(path, 0700)
+		var content_files map[string]string = map[string]string{
+			"domain/" + domain_name + "/models/":     "package models",
+			"domain/" + domain_name + "/repository/": TemplateRepo(domain_name),
+			"domain/" + domain_name + "/services/":   TemplateService(domain_name),
 		}
 
-		path = "domain/" + domain_name + "/repository/"
-		os.MkdirAll(path, 0700)
-		err = ioutil.WriteFile(path+domain_name+".go", []byte(TemplateRepo(domain_name)), 0644)
-		if err != nil {
-			os.MkdirAll(path, 0700)
-		}
-
-		path = "domain/" + domain_name + "/services/"
-		os.MkdirAll(path, 0700)
-		err = ioutil.WriteFile(path+domain_name+".go", []byte(TemplateService(domain_name)), 0644)
-		if err != nil {
-			return err
+		for path, content := range content_files {
+			if err := BuildContent(path, domain_name, content); err != nil {
+				return err
+			}
 		}
 
 		log.Println("Success to build domain " + domain_name)
@@ -40,7 +31,15 @@ func BuildDomain(domain_name string) error {
 		return nil
 	}
 
-	return fmt.Errorf("Failed to create domain because domain is exists")
+	return fmt.Errorf("failed to create domain because domain is exists")
+}
+
+func BuildContent(path, domain_name, content string) error {
+	os.MkdirAll(path, 0700)
+	if err := ioutil.WriteFile(path+domain_name+".go", []byte(content), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
 func TemplateRepo(domain_name string) string {

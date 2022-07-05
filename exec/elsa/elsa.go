@@ -23,7 +23,7 @@ func RunElsa() {
 		} else if cmd == "flush_log" {
 			err = FlushLog()
 		} else if cmd == "create_domain" {
-			err = BuildDomain(arg)
+			err = CreateDomain(arg)
 		} else if cmd == "create_migration_schema" {
 			err = CreateMigrationSchema(arg)
 		} else if cmd == "run_migration_schema" {
