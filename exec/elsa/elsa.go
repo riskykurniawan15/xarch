@@ -27,24 +27,17 @@ func RunElsa() {
 		} else if cmd == "create_migration_schema" {
 			err = CreateMigrationSchema(arg)
 		} else if cmd == "run_migration_schema" {
-			err = RunMigrationSchema(arg, "up")
+			err = AutoMigrationSchema(arg, "up")
 		} else if cmd == "rollback_migration_schema" {
-			err = RunMigrationSchema(arg, "down")
+			err = AutoMigrationSchema(arg, "down")
 		} else if cmd == "refresh_migration_schema" {
-			err_down := RunMigrationSchema(arg, "down")
-			if err_down != nil {
-				log.Fatal(err_down)
-			}
-			err_up := RunMigrationSchema(arg, "up")
-			if err_up != nil {
-				log.Fatal("%w", err_up)
-			}
+			err = AutoMigrationSchema("", "refresh")
 		} else if cmd == "create_migration_seeder" {
 			err = CreateMigrationSeeder(arg)
 		} else if cmd == "run_migration_seeder" {
-			err = RunMigrationSeeder(arg)
+			err = AutoMigrationSeeder(arg)
 		} else {
-			err = fmt.Errorf("Failed Run Command Elsa")
+			err = fmt.Errorf("failed run command elsa")
 		}
 
 		if err != nil {

@@ -137,12 +137,12 @@ func RunScript(DB *gorm.DB, files, str, tipe, method string) (bool, error) {
 }
 
 /* Schema Script */
-func CreateMigrationSchema(arg string) error {
-	if arg == "" {
-		return fmt.Errorf("Failed create migration schema")
+func CreateMigrationSchema(schema_name string) error {
+	if schema_name == "" {
+		return fmt.Errorf("failed create migration schema")
 	}
 
-	files, err := os.OpenFile(SchemaLoc+Prefix()+arg+".sql", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	files, err := os.OpenFile(SchemaLoc+Prefix()+schema_name+".sql", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -152,66 +152,50 @@ func CreateMigrationSchema(arg string) error {
 		return err
 	}
 
-	log.Println("Success create migration schema " + arg)
+	log.Println("Success create migration schema " + schema_name)
 
 	return nil
 }
 
-func RunMigrationSchema(arg string, method string) error {
-	var FileList []string
-
+func AutoMigrationSchema(schema_name string, method string) error {
 	DB := DB_Driver()
 
 	MigrationTable := MigrationTableCheck(DB, method)
 
-	if method == "up" {
-		if arg == "" {
-			for _, f := range migrate.ExecSchema() {
-				FileList = append(FileList, f)
+	if schema_name == "" {
+		if method == "down" || method == "refresh" {
+			fmt.Print(method)
+			for _, schema := range MigrationTable {
+				if err := execMigration(DB, schema.Name, "down", "schema"); err != nil {
+					return err
+				}
 			}
-		} else {
-			FileList = append(FileList, arg)
+		}
+		if method == "up" || method == "refresh" {
+			for _, schema := range migrate.ExecSchema() {
+				if err := execMigration(DB, schema, "up", "schema"); err != nil {
+					return err
+				}
+			}
 		}
 	} else {
-		if arg == "" {
-			for _, f := range MigrationTable {
-				FileList = append(FileList, f.Name)
-			}
-		} else {
-			FileList = append(FileList, arg)
+		if err := execMigration(DB, schema_name, method, "schema"); err != nil {
+			return err
 		}
 	}
 
-	for _, f := range FileList {
-		content, err := os.ReadFile(SchemaLoc + f)
-		if err != nil {
-			return err
-		}
-		script := ReadScript(string(content), method)
-		isRun, err := RunScript(DB, f, script, "schema", method)
-		if err != nil {
-			return err
-		}
-		if isRun {
-			if method == "up" {
-				log.Println("Success run migration schema " + f)
-			} else {
-				log.Println("Success rollback migration schema " + f)
-			}
-		}
-	}
 	return nil
 }
 
 /* End Schema Script */
 
 /* Seeder Script */
-func CreateMigrationSeeder(arg string) error {
-	if arg == "" {
-		return fmt.Errorf("Failed create migration seeder")
+func CreateMigrationSeeder(seeder_name string) error {
+	if seeder_name == "" {
+		return fmt.Errorf("failed create migration seeder")
 	}
 
-	files, err := os.OpenFile(SeederLoc+Prefix()+arg+".sql", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	files, err := os.OpenFile(SeederLoc+Prefix()+seeder_name+".sql", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -221,39 +205,57 @@ func CreateMigrationSeeder(arg string) error {
 		return err
 	}
 
-	log.Println("Success create migration schema " + arg)
+	log.Println("Success create migration schema " + seeder_name)
 
 	return nil
 }
 
-func RunMigrationSeeder(arg string) error {
-	var FileList []string
-
+func AutoMigrationSeeder(seeder_name string) error {
 	DB := DB_Driver()
 
-	if arg == "" {
-		for _, f := range migrate.ExecSeeder() {
-			FileList = append(FileList, f)
+	if seeder_name == "" {
+		for _, seeder := range migrate.ExecSeeder() {
+			if err := execMigration(DB, seeder, "up", "seeder"); err != nil {
+				return err
+			}
 		}
 	} else {
-		FileList = append(FileList, arg)
+		if err := execMigration(DB, seeder_name, "up", "seeder"); err != nil {
+			return err
+		}
 	}
 
-	for _, f := range FileList {
-		content, err := os.ReadFile(SeederLoc + f)
-		if err != nil {
-			return err
-		}
-		script := ReadScript(string(content), "up")
-		isRun, err := RunScript(DB, f, script, "seeder", "up")
-		if err != nil {
-			return err
-		}
-		if isRun {
-			log.Println("Success run migration seeder " + f)
-		}
-	}
 	return nil
 }
 
 /* End Seeder Script */
+
+/* Exec Migration Script */
+func execMigration(DB *gorm.DB, name, method, types string) error {
+	var location string
+	if types == "schema" {
+		location = SchemaLoc
+	} else {
+		location = SeederLoc
+	}
+	content, err := os.ReadFile(location + name)
+	if err != nil {
+		return err
+	}
+	script := ReadScript(string(content), method)
+	isRun, err := RunScript(DB, name, script, types, method)
+	if err != nil {
+		return err
+	}
+	if isRun {
+		if method == "up" {
+			log.Println(fmt.Sprintf("Success run migration %s %s", types, name))
+		} else {
+			log.Println(fmt.Sprintf("Success rollback migration %s %s", types, name))
+		}
+	}
+
+	return nil
+}
+
+/* End Exec Migration Script */
