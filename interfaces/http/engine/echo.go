@@ -19,6 +19,7 @@ func Start(wg *sync.WaitGroup, cfg config.Config, log logger.Logger, svc *domain
 	e := routers.Routers(svc, cfg, log)
 
 	go func() {
+		e.HideBanner = true
 		if err := e.Start(fmt.Sprintf("%s:%d", cfg.Http.Server, cfg.Http.Port)); err != nil && err != http.ErrServerClosed {
 			log.Fatal("shutting down the server")
 			e.Logger.Fatal("shutting down the server")
