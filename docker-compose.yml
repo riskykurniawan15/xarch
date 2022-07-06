@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    container_name: xarch_app
+    build: .
+    ports: 
+      - "1999:1999"
+    # restart: on-failure
