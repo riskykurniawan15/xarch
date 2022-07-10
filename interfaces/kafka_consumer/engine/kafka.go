@@ -32,9 +32,6 @@ func NewKafkaEngine(cfg config.Config, log logger.Logger) *EngineLib {
 
 func (EL EngineLib) Consume(wg *sync.WaitGroup, topic string, handler func(context.Context, string, string) error) {
 	defer wg.Done()
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	run := true
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, "topic", topic)
 	EL.kfk.Topic = topic
@@ -43,6 +40,7 @@ func (EL EngineLib) Consume(wg *sync.WaitGroup, topic string, handler func(conte
 		"topic": topic,
 	})
 
+	run := true
 	go func() {
 		for run {
 			m, err := r.ReadMessage(ctx)
@@ -58,6 +56,8 @@ func (EL EngineLib) Consume(wg *sync.WaitGroup, topic string, handler func(conte
 			handler(ctx, string(m.Key), string(m.Value))
 		}
 	}()
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
 	<-quit
 	run = false
 	if err := r.Close(); err != nil {
