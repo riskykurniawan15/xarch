@@ -82,8 +82,9 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 │   └───domain.go           # For publishing a domain and inject all dependencies to domain
 ├───driver                  # Dir to defined and registered all driver (backing services)
 ├───exec                    # Application layer contains all program in architecture
-│   ├───arch                # Arch Application (services)
-│   └───elsa                # Elsa Application (tools)
+│   ├───elsa                # Elsa Application (tools)
+│   ├───xarch               # Arch Application (services)
+│   └───exec.go             # Program for handling switching program application
 ├───helpers                 # Dir to contains all helpering program
 │   ├───bcrypt              # Hash and compare bcrypt
 │   ├───env                 # Program to get environtment to specifics format data type
