@@ -11,6 +11,7 @@ import (
 )
 
 func RunApp() {
+	duration := 1
 	logo := `Welcome to:
      ___           ___           ___           ___           ___     
     |\__\         /\  \         /\  \         /\  \         /\__\    
@@ -28,8 +29,8 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 	fmt.Print(string("\033[32m"))
 	fmt.Println(logo, string("\033[34m"))
 	fmt.Println("By: Risky Kurniawan | https://risoftinc.com | mailto:riskykurniawan@risoftinc.com")
-	fmt.Println("Please wait, your program is running in 1 seconds", string("\033[0m"))
-	time.Sleep(time.Duration(1) * time.Second)
+	fmt.Println("Please wait, your program is running in", duration, "seconds", string("\033[0m"))
+	time.Sleep(time.Duration(duration) * time.Second)
 	Startup()
 }
 
