@@ -83,7 +83,7 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 ├───driver                  # Dir to defined and registered all driver (backing services)
 ├───exec                    # Application layer contains all program in architecture
 │   ├───elsa                # Elsa Application (tools)
-│   ├───xarch               # Arch Application (services)
+│   ├───xarch               # Xarch Application (services)
 │   └───exec.go             # Program for handling switching program application
 ├───helpers                 # Dir to contains all helpering program
 │   ├───bcrypt              # Hash and compare bcrypt
