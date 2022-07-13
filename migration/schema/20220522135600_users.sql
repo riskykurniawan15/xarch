@@ -6,6 +6,7 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL UNIQUE,
   `password` varchar(100) NOT NULL,
   `gender` enum('male','female') NOT NULL,
+  `image` varchar(100) NULL,
   `verified_at` TIMESTAMP NULL,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,

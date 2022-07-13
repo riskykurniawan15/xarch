@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"mime/multipart"
 	"strings"
 	"time"
 
@@ -385,4 +386,63 @@ func (svc UserService) EmailVerification(ctx context.Context, ID uint, token str
 	svc.UserRepo.DeleteTokenUser(ctx, tokenQuery)
 
 	return "varifikasi success", nil
+}
+
+func (svc UserService) UploadProfileImage(ctx context.Context, ID uint, file *multipart.FileHeader) (*models.User, *errors.ErrorResponse) {
+	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return nil, errors.BadRequest.NewError(fmt.Errorf("user not found"))
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return nil, errors.InternalError.NewError(fmt.Errorf("error on uploading file"))
+	}
+	defer src.Close()
+
+	image, err := svc.UserRepo.StoreFile(ctx, src)
+	if err != nil {
+		return nil, errors.InternalError.NewError(fmt.Errorf("error on storing file to cloud"))
+	}
+
+	_, err = svc.UserRepo.UpdateUser(ctx, ID, &models.User{
+		Image: image,
+	})
+	if err != nil {
+		return nil, errors.InternalError.NewError(fmt.Errorf("failed to update password"))
+	}
+
+	if userData.Image != "" {
+		svc.UserRepo.DestroyFile(ctx, userData.Image)
+	}
+
+	result, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return nil, errors.BadRequest.NewError(fmt.Errorf("user not found"))
+	}
+
+	return result, nil
+}
+
+func (svc UserService) GetProfileImage(ctx context.Context, ID uint) ([]byte, *errors.ErrorResponse) {
+	userData, err := svc.UserRepo.SelectUserDetail(ctx, &models.User{ID: ID})
+	if err != nil {
+		return nil, errors.BadRequest.NewError(fmt.Errorf("user not found"))
+	}
+
+	if userData.Image == "" {
+		return nil, errors.NotFound.NewError(fmt.Errorf("no image"))
+	}
+
+	meta, err := svc.UserRepo.RetrieveFile(ctx, userData.Image)
+	if err != nil {
+		return nil, errors.InternalError.NewError(fmt.Errorf("error on retrieve meta file to cloud"))
+	}
+
+	result, err := svc.UserRepo.GetFile(ctx, meta.URL)
+	if err != nil {
+		return nil, errors.InternalError.NewError(fmt.Errorf("error on storing file to cloud"))
+	}
+
+	return result, nil
 }

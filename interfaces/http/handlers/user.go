@@ -216,3 +216,48 @@ func (handler UserHandler) Verification(ctx echo.Context) error {
 		"data": data,
 	}))
 }
+
+func (handler UserHandler) UploadProfileImage(ctx echo.Context) error {
+	ID, err_id := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
+	if err_id != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err_id.Error(),
+		}))
+	}
+
+	file, err_file := ctx.FormFile("profile_image")
+	if err_file != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err_file.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.UploadProfileImage(ctx.Request().Context(), uint(ID), file)
+	if err != nil {
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
+		}))
+	}
+
+	return ctx.JSON(http.StatusOK, entities.ResponseFormater(http.StatusOK, map[string]interface{}{
+		"data": data,
+	}))
+}
+
+func (handler UserHandler) GetProfileImage(ctx echo.Context) error {
+	ID, err_id := strconv.Atoi(fmt.Sprint(ctx.Get("ID")))
+	if err_id != nil {
+		return ctx.JSON(http.StatusBadGateway, entities.ResponseFormater(http.StatusBadGateway, map[string]interface{}{
+			"error": err_id.Error(),
+		}))
+	}
+
+	data, err := handler.UserService.GetProfileImage(ctx.Request().Context(), uint(ID))
+	if err != nil {
+		return ctx.JSON(err.HttpCode, entities.ResponseFormater(err.HttpCode, map[string]interface{}{
+			"error": err.Errors.Error(),
+		}))
+	}
+
+	return ctx.Blob(http.StatusOK, "", data)
+}

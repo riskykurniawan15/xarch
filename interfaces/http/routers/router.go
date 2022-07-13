@@ -55,6 +55,8 @@ func Routers(svc *domain.Service, cfg config.Config, log logger.Logger) *echo.Ec
 		user_group.GET("/profile", user_handler.GetProfile)
 		user_group.PUT("/profile", user_handler.UpdateProfile)
 		user_group.POST("/password", user_handler.UpdatePassword)
+		user_group.GET("/profile_image", user_handler.GetProfileImage)
+		user_group.PUT("/profile_image", user_handler.UploadProfileImage)
 	}
 
 	alquran_group := engine.Group("/alquran")

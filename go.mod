@@ -49,4 +49,10 @@ require (
 	github.com/xhit/go-simple-mail/v2 v2.11.0
 )
 
-require github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
+require (
+	github.com/cloudinary/cloudinary-go/v2 v2.1.0 // indirect
+	github.com/creasty/defaults v1.5.1 // indirect
+	github.com/google/uuid v1.2.0 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
+	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
+)
