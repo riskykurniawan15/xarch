@@ -11,13 +11,14 @@ import (
 var log logger.Logger = logger.NewLogger()
 
 type Config struct {
-	Http  HttpServer
-	DB    DBServer
-	RDB   RDBServer
-	Email EmailSender
-	KAFKA KafkaConfig
-	JWT   JWTConfig
-	OTHER Other
+	Http       HttpServer
+	DB         DBServer
+	RDB        RDBServer
+	Email      EmailSender
+	KAFKA      KafkaConfig
+	Cloudinary Cloudinary
+	JWT        JWTConfig
+	OTHER      Other
 }
 
 type HttpServer struct {
@@ -62,6 +63,12 @@ type KafkaConfig struct {
 	TOPIC_PASS_FORGOT    string
 }
 
+type Cloudinary struct {
+	CLOUD_NAME string
+	API_KEY    string
+	API_SECRET string
+}
+
 type JWTConfig struct {
 	SecretKey string
 	Expired   int
@@ -80,13 +87,14 @@ func Configuration() Config {
 	}
 
 	cfg := Config{
-		Http:  loadHttpServer(),
-		DB:    loadDBServer(),
-		RDB:   loadRDBServer(),
-		Email: loadEmailSender(),
-		KAFKA: loadKafkaConfig(),
-		JWT:   loadJWTConfig(),
-		OTHER: loadOther(),
+		Http:       loadHttpServer(),
+		DB:         loadDBServer(),
+		RDB:        loadRDBServer(),
+		Email:      loadEmailSender(),
+		KAFKA:      loadKafkaConfig(),
+		Cloudinary: loadCloudinary(),
+		JWT:        loadJWTConfig(),
+		OTHER:      loadOther(),
 	}
 
 	log.Info("Success for load all configuration")
@@ -166,5 +174,13 @@ func loadJWTConfig() JWTConfig {
 func loadOther() Other {
 	return Other{
 		AlQuranAPI: env.GetString("ALQURAN_API"),
+	}
+}
+
+func loadCloudinary() Cloudinary {
+	return Cloudinary{
+		CLOUD_NAME: env.GetString("CLOUD_NAME"),
+		API_KEY:    env.GetString("API_KEY"),
+		API_SECRET: env.GetString("API_SECRET"),
 	}
 }
