@@ -5,7 +5,7 @@ CREATE TABLE `user_tokens` (
   `method` enum('verified','forgot') NOT NULL,
   `token` varchar(100) UNIQUE NOT NULL,
   `expired` TIMESTAMP NULL,
-  `created_at` TIMESTAMP NULL,
+  `created_at` TIMESTAMP default now(),
   `updated_at` TIMESTAMP NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)

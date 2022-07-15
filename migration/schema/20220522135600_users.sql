@@ -8,7 +8,7 @@ CREATE TABLE `users` (
   `gender` enum('male','female') NOT NULL,
   `image` varchar(100) NULL,
   `verified_at` TIMESTAMP NULL,
-  `created_at` TIMESTAMP NULL,
+  `created_at` TIMESTAMP default now(),
   `updated_at` TIMESTAMP NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
