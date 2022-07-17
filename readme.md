@@ -27,12 +27,12 @@ go get ./...
 
 For running xarch program open the console, bash or terminal
 ```bash
-go run main.go -engine=${engine}
+go run main.go xarch -engine=${engine}
 ```
 you can type engine to (*) for running all engine or you can type the engine name for run the specific engine. Example:
 ```bash
-go run main.go -engine=http
-go run main.go -engine=consumer
+go run main.go xarch -engine=http
+go run main.go xarch -engine=consumer
 ```
 
 ## Working With Elsa (Electronic Smart Assistant)
@@ -73,6 +73,10 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 ## Folder Structure
 ```tree
 .
+├───app                     # Application layer contains all program in architecture
+│   ├───elsa                # Elsa Application (tools)
+│   ├───xarch               # Xarch Application (services)
+│   └───app.go              # Program for handling switching program application
 ├───config                  # All configuration in application
 ├───domain                  # Domain Layers is containing a models, repository and services
 │   ├───domain_name         # Name of domain 
@@ -81,10 +85,6 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 │   │   └───services        # Services file to processing a bussiness application
 │   └───domain.go           # For publishing a domain and inject all dependencies to domain
 ├───driver                  # Dir to defined and registered all driver (backing services)
-├───exec                    # Application layer contains all program in architecture
-│   ├───elsa                # Elsa Application (tools)
-│   ├───xarch               # Xarch Application (services)
-│   └───exec.go             # Program for handling switching program application
 ├───helpers                 # Dir to contains all helpering program
 │   ├───bcrypt              # Hash and compare bcrypt
 │   ├───env                 # Program to get environtment to specifics format data type
@@ -93,16 +93,17 @@ go run main.go elsa run_migration_seeder ${seeder_name}
 │   ├───mail                # Mail sender helper
 │   └───md5                 # Converted plain text to MD5
 ├───interfaces              # Interfaces Layer contains all engine method for user access a application
-│   ├───http                # Http Engine
-│   │   ├───engine          # Define a engine script for running a http server interfaces
-│   │   ├───entities        # Define to entities models contains a response formater
-│   │   ├───handlers        # All handler in http interfaces
-│   │   ├───middleware      # All handler middleware in http interfaces
-│   │   └───routers         # Routing http server
-│   └───kafka_consumer      # Consumer Engine
-│       ├───engine          # Define a engine script for running a consumer interfaces
-│       ├───handlers        # All handler in consumer interfaces
-│       └───consumer.go     # Routing and defined all job in consumer interfaces
+│   └───xarch               # Group interfaces by app
+│       ├───consumer        # Consumer Engine
+│       │   ├───engine      # Define a engine script for running a consumer interfaces
+│       │   ├───handlers    # All handler in consumer interfaces
+│       │   └───consumer.go # Routing and defined all job in consumer interfaces
+│       └───http            # Http Engine
+│           ├───engine      # Define a engine script for running a http server interfaces
+│           ├───entities    # Define to entities models contains a response formater
+│           ├───handlers    # All handler in http interfaces
+│           ├───middleware  # All handler middleware in http interfaces
+│           └───routers     # Routing http server
 ├───logger                  # Contains a logger program and dir to save all log file
 ├───migration               # Migration layers can acessed with elsa program
 │   ├───schema              # Containing script schema in sql format
