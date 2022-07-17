@@ -10,8 +10,8 @@ import (
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/domain"
 	"github.com/riskykurniawan15/xarch/driver"
-	echo "github.com/riskykurniawan15/xarch/interfaces/http/engine"
-	consumer "github.com/riskykurniawan15/xarch/interfaces/kafka_consumer"
+	consumer "github.com/riskykurniawan15/xarch/interfaces/xarch/consumer"
+	echo "github.com/riskykurniawan15/xarch/interfaces/xarch/http/engine"
 	"github.com/riskykurniawan15/xarch/logger"
 )
 

@@ -1,4 +1,4 @@
-package exec
+package app
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/riskykurniawan15/xarch/exec/elsa"
-	"github.com/riskykurniawan15/xarch/exec/xarch"
+	"github.com/riskykurniawan15/xarch/app/elsa"
+	"github.com/riskykurniawan15/xarch/app/xarch"
 )
 
 func RunApp() {
@@ -36,15 +36,18 @@ ____/::::\__\ /:/\:\ \:\__\ /:/\:\ \:\__\ /:/__/ \:\__\ /:/\:\  /\__\
 }
 
 func Startup() {
-	var cli string = ""
+	var app_instance string = ""
 	if len(os.Args) > 1 {
-		cli = strings.ToLower(os.Args[1])
+		app_instance = strings.ToLower(os.Args[1])
 	}
 
-	switch cli {
+	switch app_instance {
 	case "elsa":
 		elsa.RunElsa()
-	default:
+	case "xarch":
 		xarch.RunXarch()
+	default:
+		fmt.Println("please run app with app instance [elsa|xarch], example:")
+		fmt.Println("go run main.go ${app_instance}")
 	}
 }

@@ -11,7 +11,7 @@ import (
 
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/domain"
-	"github.com/riskykurniawan15/xarch/interfaces/http/routers"
+	"github.com/riskykurniawan15/xarch/interfaces/xarch/http/routers"
 	"github.com/riskykurniawan15/xarch/logger"
 )
 

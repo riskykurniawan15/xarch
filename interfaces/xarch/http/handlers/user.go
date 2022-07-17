@@ -9,7 +9,7 @@ import (
 
 	"github.com/riskykurniawan15/xarch/domain/users/models"
 	"github.com/riskykurniawan15/xarch/domain/users/services"
-	"github.com/riskykurniawan15/xarch/interfaces/http/entities"
+	"github.com/riskykurniawan15/xarch/interfaces/xarch/http/entities"
 )
 
 type UserHandler struct {

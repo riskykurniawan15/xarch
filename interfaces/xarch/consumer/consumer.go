@@ -5,8 +5,8 @@ import (
 
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/domain"
-	"github.com/riskykurniawan15/xarch/interfaces/kafka_consumer/engine"
-	"github.com/riskykurniawan15/xarch/interfaces/kafka_consumer/handlers"
+	"github.com/riskykurniawan15/xarch/interfaces/xarch/consumer/engine"
+	"github.com/riskykurniawan15/xarch/interfaces/xarch/consumer/handlers"
 	"github.com/riskykurniawan15/xarch/logger"
 )
 

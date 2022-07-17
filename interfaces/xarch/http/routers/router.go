@@ -4,8 +4,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/riskykurniawan15/xarch/config"
 	"github.com/riskykurniawan15/xarch/domain"
-	handlers "github.com/riskykurniawan15/xarch/interfaces/http/handlers"
-	"github.com/riskykurniawan15/xarch/interfaces/http/middleware"
+	handlers "github.com/riskykurniawan15/xarch/interfaces/xarch/http/handlers"
+	"github.com/riskykurniawan15/xarch/interfaces/xarch/http/middleware"
 	"github.com/riskykurniawan15/xarch/logger"
 )
 

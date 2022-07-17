@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/riskykurniawan15/xarch/domain/alquran/services"
-	"github.com/riskykurniawan15/xarch/interfaces/http/entities"
+	"github.com/riskykurniawan15/xarch/interfaces/xarch/http/entities"
 )
 
 type AlquranHandler struct {
