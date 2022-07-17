@@ -47,7 +47,7 @@ func Startup() {
 	case "xarch":
 		xarch.RunXarch()
 	default:
-		fmt.Println("please run app with app instance [elsa|xarch], example:")
+		fmt.Println("Failed to run app. Please re run with app instance [elsa|xarch], example:")
 		fmt.Println("go run main.go ${app_instance}")
 	}
 }
