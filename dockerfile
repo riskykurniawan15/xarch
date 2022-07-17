@@ -33,7 +33,7 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/.env .       
 
 #Command to run the executable
-CMD ["./main", "-engine=*"]
+CMD ["./main", "xarch -engine=*"]
 
 # Expose port 1999 to the outside world
 EXPOSE 1999
