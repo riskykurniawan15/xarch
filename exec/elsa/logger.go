@@ -4,8 +4,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	"github.com/riskykurniawan15/xarch/logger"
 )
 
 var log_dir string = "./logger/"
@@ -18,7 +16,7 @@ func FlushLog() error {
 
 	counter := 0
 	for _, f := range files {
-		if f.Name() != "logger.go" && f.Name() != logger.Prefix()+".log" {
+		if f.Name() != "logger.go" {
 			e := os.Remove(log_dir + f.Name())
 			if e == nil {
 				counter++

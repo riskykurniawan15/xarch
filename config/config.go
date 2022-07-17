@@ -2,13 +2,11 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/riskykurniawan15/xarch/helpers/env"
-	"github.com/riskykurniawan15/xarch/logger"
 )
-
-var log logger.Logger = logger.NewLogger()
 
 type Config struct {
 	Http       HttpServer
@@ -80,10 +78,9 @@ type Other struct {
 
 func Configuration() Config {
 
-	log.Info("Load all configuration")
 	err := env.LoadEnv(".env")
 	if err != nil {
-		log.ErrorW("error read .env file", err.Error())
+		log.Println(fmt.Sprintf("error read .env file %w", err.Error()))
 	}
 
 	cfg := Config{
@@ -97,7 +94,7 @@ func Configuration() Config {
 		OTHER:      loadOther(),
 	}
 
-	log.Info("Success for load all configuration")
+	log.Println("Success for load all configuration")
 
 	return cfg
 }
