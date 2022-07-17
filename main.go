@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/riskykurniawan15/xarch/exec"
+	"github.com/riskykurniawan15/xarch/app"
 )
 
 func main() {
-	exec.RunApp()
+	app.RunApp()
 }
