@@ -35,6 +35,11 @@ go run main.go xarch -engine=http
 go run main.go xarch -engine=consumer
 ```
 
+custom environment on startup can be set in flags $Key=Value
+```bash
+go run main.go xarch -engine=http $Key=Value
+```
+
 ## Working With Elsa (Electronic Smart Assistant)
 Elsa is a tools for making your happy and enjoy to developing the program. Elsa have a many function for assist developing a program. You can say and use elsa with type command understandable in elsa program. Example you can command:
 ```bash
