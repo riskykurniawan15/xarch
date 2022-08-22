@@ -2,6 +2,7 @@ package xarch
 
 import (
 	"flag"
+	"os"
 	"sync"
 
 	"gorm.io/gorm"
@@ -43,11 +44,26 @@ func ShutdownDriver(DB *gorm.DB, RDB *redis.Client) {
 	}
 }
 
+func argsClean() []string {
+	var notargs []string
+	var in_flags bool = false
+	for i := 0; i < len(os.Args); i++ {
+		if os.Args[i][0] == '-' {
+			in_flags = true
+		}
+		if i == 0 || in_flags {
+			notargs = append(notargs, os.Args[i])
+		}
+	}
+	return notargs
+}
+
 func RunXarch() {
 	DB, RDB := StartDriver()
 	var wg sync.WaitGroup
 	svc := domain.StartService(cfg, DB, RDB)
 
+	os.Args = argsClean()
 	log.Info("Running Switch Engine")
 	engine := flag.String("engine", "*", "type your egine")
 	flag.Parse()
