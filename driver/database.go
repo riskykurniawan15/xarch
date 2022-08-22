@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
+	// "gorm.io/driver/postgres"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 
@@ -16,25 +16,14 @@ import (
 
 func openSQL(cfg config.DBServer) *sql.DB {
 	var driver, dsn string
-	if cfg.DB_DRIVER == "mysql" {
-		driver = cfg.DB_DRIVER
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-			cfg.DB_USER,
-			cfg.DB_PASS,
-			cfg.DB_SERVER,
-			cfg.DB_PORT,
-			cfg.DB_NAME,
-		)
-	} else if cfg.DB_DRIVER == "postgresql" {
-		driver = "pgx"
-		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
-			cfg.DB_SERVER,
-			cfg.DB_USER,
-			cfg.DB_PASS,
-			cfg.DB_NAME,
-			cfg.DB_PORT,
-		)
-	}
+	driver = cfg.DB_DRIVER
+	dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		cfg.DB_USER,
+		cfg.DB_PASS,
+		cfg.DB_SERVER,
+		cfg.DB_PORT,
+		cfg.DB_NAME,
+	)
 
 	sqlDB, _ := sql.Open(driver, dsn)
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
@@ -62,14 +51,6 @@ func ConnectDB(cfg config.DBServer) *gorm.DB {
 		}), &gorm.Config{})
 		if err != nil {
 			panic("Failed to Connect mysql")
-		}
-		return db
-	} else if cfg.DB_DRIVER == "postgresql" {
-		db, err := gorm.Open(postgres.New(postgres.Config{
-			Conn: openSQL(cfg),
-		}), &gorm.Config{})
-		if err != nil {
-			panic("Failed to Connect postgresql")
 		}
 		return db
 	} else if cfg.DB_DRIVER == "sqlserver" {
