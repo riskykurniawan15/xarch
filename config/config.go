@@ -96,8 +96,6 @@ func Configuration() Config {
 		OTHER:      loadOther(),
 	}
 
-	fmt.Printf("%-v", loadHttpServer())
-
 	log.Println("Success for load all configuration")
 
 	return cfg

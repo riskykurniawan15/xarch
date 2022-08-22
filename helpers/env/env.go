@@ -1,7 +1,6 @@
 package env
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -18,7 +17,6 @@ func LoadFlags() {
 		if os.Args[i][0] == '$' {
 			value := strings.Split(strings.Replace(os.Args[i], "$", "", -1), "=")
 			if len(value) == 2 {
-				fmt.Println("masuk")
 				os.Setenv(value[0], value[1])
 			}
 		}
