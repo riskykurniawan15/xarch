@@ -83,6 +83,8 @@ func Configuration() Config {
 		log.Println(fmt.Sprintf("error read .env file %w", err.Error()))
 	}
 
+	env.LoadFlags()
+
 	cfg := Config{
 		Http:       loadHttpServer(),
 		DB:         loadDBServer(),
@@ -93,6 +95,8 @@ func Configuration() Config {
 		JWT:        loadJWTConfig(),
 		OTHER:      loadOther(),
 	}
+
+	fmt.Printf("%-v", loadHttpServer())
 
 	log.Println("Success for load all configuration")
 
