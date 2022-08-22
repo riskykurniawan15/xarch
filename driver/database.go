@@ -63,7 +63,7 @@ func ConnectDB(cfg config.DBServer) *gorm.DB {
 		)
 		db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 		if err != nil {
-			panic("Failed to Connect postgresql")
+			panic("Failed to Connect sqlserver")
 		}
 		return db
 	} else {
