@@ -30,10 +30,12 @@ WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage. Observe we also copied the .env file
 COPY --from=builder /app/main .
-COPY --from=builder /app/.env .       
+COPY --from=builder /app/migration/schema/ ./migration/schema/.
+COPY --from=builder /app/migration/seeder/ ./migration/seeder/.
+COPY --from=builder /app/.env.docker .env       
 
 #Command to run the executable
-CMD ["./main", "xarch -engine=*"]
+CMD ["./main", "xarch"]
 
 # Expose port 1999 to the outside world
 EXPOSE 1999

@@ -5,4 +5,38 @@ services:
     build: .
     ports: 
       - "1999:1999"
-    # restart: on-failure
+    restart: on-failure
+    environment:
+      USING_SECURE: "false"
+      SERVER: 0.0.0.0
+      PORT: 1999
+      DB_DRIVER: MYSQL
+      DB_USER: root
+      DB_PASS: kurniawan
+      DB_SERVER: mysql
+      DB_PORT: 3306
+      DB_NAME: xarch
+      DB_MAX_IDLE_CON: 10
+      DB_MAX_OPEN_CON: 100
+      DB_MAX_LIFE_TIME: 5
+      RDB_ADDRESS: redis
+      RDB_PORT: 6379
+      RDB_USER: risky
+      RDB_PASS: kurniawan
+      RDB_DB_DEFAULT: 0
+      KAFKA_SERVER: kafka
+      KAFKA_PORT: 29092
+      KAFKA_CONSUMER_GROUP: xarch
+      TOPIC_EMAIL_VERIFIED: "xarch.email_verif"
+      TOPIC_PASS_FORGOT: "xarch.email_pass_forgot"
+      ALQURAN_API: "https://quranlci.com/api/"
+      JWT_SECRET_KEY: "SecretKey"
+      JWT_EXPIRED: 24  
+      EMAIL_HOST: "mail.risoftinc.com"
+      EMAIL_PORT: 465
+      EMAIL_NAME: "XARCH"
+      EMAIL_EMAIL: "xarch@risoftinc.com"
+      EMAIL_PASSWORD: "bARpaI#dr]R]"
+      CLOUD_NAME: "risoftinc"
+      API_KEY: "449915439566278"
+      API_SECRET: "jfgjDvi42Df3QWPe4vDxq8iIVng"
