@@ -3,3 +3,4 @@
 .vscode
 logger/*
 !logger/logger.go
+*.exe
